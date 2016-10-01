@@ -1,0 +1,98 @@
+Vector Field Denoising with DIV-CURL Regularization
+
+Author: Pouya Dehghani Tafti <pouya.tafti@a3.epfl.ch>
+        Biomedical Imaging Group, EPFL, Lausanne
+        http://bigwww.epfl.ch/
+
+Dates:  08 Feb. 2012 (current release)
+        ?? Feb. 2011 (this implementation)
+
+References:
+
+P. D. Tafti and M. Unser, On regularized reconstruction of vector fields, IEEE
+Trans. Image Process., vol. 20, no. 11, pp. 3163–78, 2011.
+
+P. D. Tafti, R. Delgado-Gonzalo, A. F. Stalder, and M. Unser, Variational
+enhancement and denoising of flow field images, Proc. 8th IEEE Int. Symp.
+Biomed. Imaging (ISBI 2011), pp. 1061–4, Chicago, IL, 2011.
+
+
+# DESCRIPTION AND LICENCE
+
+This is an implementation of the vector-field denoising algorithm described in
+the following papers:
+
+P. D. Tafti and M. Unser, On regularized reconstruction of vector fields, IEEE
+Trans. Image Process., vol. 20, no. 11, pp. 3163–78, 2011.
+
+P. D. Tafti, R. Delgado-Gonzalo, A. F. Stalder, and M. Unser, Variational
+enhancement and denoising of flow field images, Proc. 8th IEEE Int. Symp.
+Biomed. Imaging (ISBI 2011), pp. 1061–4, Chicago, IL, 2011.
+
+The code is provided freely for non-commercial and educational use, but
+WITHOUT ANY GUARANTEES OF ANY KIND.  USE AT YOUR OWN RISK. :-)
+
+If you use this code or derivatives of it, or results obtained using the code
+or its derivatives in publications, we would appreciate references to the
+above two papers (the first being more important).  In addition, we request
+that you do not re-distribute this code or derivatives of it without our
+consent and permission.
+
+
+# USE WITH YOUR OWN DATA
+
+To use with your own data, you will need to provide a .mat file with the
+following variables:
+
+name:   (string) name of the dataset
+Y1:     (3D array) measurements of the 1st vector coordinate over a Cartesian
+        grid
+Y2:     (3D array) measurements of the 2nd vector coordinate over a Cartesian
+        grid
+Y3:     (3D array) measurements of the 3rd vector coordinate over a Cartesian
+        grid
+
+Y1, Y2, and Y3 must have the same size.  The grid is assumed to be uniform,
+but need not have the same size in all dimensions.
+
+If you have the ground truth in addition to the noisy data, you can optionally
+use it by providing a second .mat file with the same format.
+
+
+# EXECUTION
+
+The main script is demo.m.  All important parameters are set by the user (with
+defaults provided) at the time of execution, with the exception of optimizer
+parameters which are hard-coded in setparams.m, and the save path and email
+address for updates (optional), which must be set at the top of demo.m.  If you
+wish to receive email updates, you will also need to set the mail server
+parameters in send_mail.m.
+
+
+# VISUALIZATION
+
+Input and outputs can be saved as .VTK files and visualized using the free
+software package ParaView:
+
+http://www.paraview.org/
+
+
+# DESCRIPTION OF CONTENTS
+
+demo.m              main demo script
+
+AFproduct.m         matrix-vector product (see papaer)
+MSEest.m            mean square error (MSE) estimate (wrapper)
+MSEest_GCV.m        MSE estimate using generalized cross-validation (GCV)
+MSEest_SURE.m       MSE estimate using Stein's unbiased risk estimate (SURE)
+VTKwrite.m          script for writing the output as VTK files
+data.m              script for loading data from user-provided .mat files
+findiff3.m          3D finite differences
+fmin1.m             a weird bounded parameter optimizer
+phantom.m           script for generating a variety of simulated phantoms
+send_mail.m         function to send mail (you will need to configure this if you
+                    want to receive email updates)
+setparams.m         script to set the main parameters interactively
+shiftmirror.m       a shift operator with mirror boundary conditions
+sigmaNest.m         noise variance estimate
+vecdenoise3.m       main denoising function
