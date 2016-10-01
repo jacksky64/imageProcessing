@@ -1,0 +1,73 @@
+===========================================================================
+ Matlab (and mex)
+===========================================================================
+Demos:
+ demo_QC1.m
+ demo_QC2.m
+ demo_QC3.m
+ demo_QC4.m
+ demo_QC_compute.m
+  
+Functions:
+ QC.m
+ QC_full_sparse.m
+ QC_full_full.m
+ QC_signatures.m
+ fast_sift_bin_similarity_matrix.m
+ fast_color_spatial_ground_similarity_pruning.m
+ sift_bin_similarity_function.m
+ check_if_QC_valid_bin_similarity_matrix.m
+ 
+Implementation stuff:
+ QC_full_sparse.cxx
+ fast_sift_bin_similarity_matrix.cxx
+ fast_color_spatial_ground_similarity_pruning.cxx
+ OP_mex_utils.hxx
+ check_if_QC_valid_bin_similarity_matrix.cxx
+ 
+Installing:
+ compile_QC.m
+===========================================================================
+
+===========================================================================
+ C++
+===========================================================================
+Demos:
+ demo_QC_full_sparse.cpp
+ demo_QC_sparse_sparse.cpp
+
+Functions:
+ QC_full_sparse.hpp
+ QC_sparse_sparse.hpp 
+ deltaE2000.hpp  
+ 
+ 
+Implementation stuff:
+ QC_utils.hpp
+ ind_sim_pair.hpp                                           
+ ind_val_pair.hpp                                           
+ sparse_matlab_like_matrix.hpp                              
+ sparse_similarity_matrix_utils.hpp                         
+ sparse_vector_constant_time_access_element.hpp
+ tictoc.hpp
+===========================================================================
+
+
+===========================================================================
+ Input files
+===========================================================================
+ 1.jpg
+ 2.jpg
+ 3.jpg
+===========================================================================
+
+===========================================================================
+ Other stuff
+===========================================================================
+ Makefile
+ mexext
+ README.txt
+ LICENSE.txt
+ DIRECTORY_LISTING.txt
+===========================================================================
+
