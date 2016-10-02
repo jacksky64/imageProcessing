@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  
+  <!-- Controllo presenza delle macro di scelta della versione -->
+<Target Name="Validate_IPP_PropertySheets" BeforeTargets="ClCompile">
+    <Error
+        Text="La macro IPP_SOLUTION_VERSION deve essere definita. Verificare la presenza del property sheet di solution adeguato"
+        Condition="'$(IPP_SOLUTION_VERSION)' == ''" />
+    <Error
+        Text="La macro IPP_SOLUTION_LINK_TYPE deve essere definita. Verificare la presenza del property sheet di solution adeguato"
+        Condition="'$(IPP_SOLUTION_LINK_TYPE)' == ''" />
+    <Error
+        Text="La macro IPP_SOLUTION_THREADING deve essere definita. Verificare la presenza del property sheet di solution adeguato"
+        Condition="'$(IPP_SOLUTION_THREADING)' == ''" />
+    <Error
+        Text="La macro EXTERNAL_LIBRARIES_BASE_FOLDER deve essere definita. Verificare la presenza del property sheet di solution adeguato"
+        Condition="'$(EXTERNAL_LIBRARIES_BASE_FOLDER)' == ''" />
+</Target>
+
+  <!-- definitions  --> 
+<PropertyGroup Label="UserMacros">
+    <IPP_THREADING_LINKING Condition="'$(IPP_SOLUTION_THREADING)'=='SINGLE' AND '$(IPP_SOLUTION_LINK_TYPE)'=='STATIC'">_IPP_SEQUENTIAL_STATIC</IPP_THREADING_LINKING>
+    <IPP_THREADING_LINKING Condition="'$(IPP_SOLUTION_THREADING)'=='SINGLE' AND '$(IPP_SOLUTION_LINK_TYPE)'=='STATIC'">_IPP_SEQUENTIAL_STATIC</IPP_THREADING_LINKING>
+    <IPP_THREADING_LINKING Condition="'$(IPP_SOLUTION_THREADING)'=='PARALLEL' AND '$(IPP_SOLUTION_LINK_TYPE)'=='DYNAMIC'">_IPP_PARALLEL_DYNAMIC</IPP_THREADING_LINKING>
+    <IPP_THREADING_LINKING Condition="'$(IPP_SOLUTION_THREADING)'=='PARALLEL' AND '$(IPP_SOLUTION_LINK_TYPE)'=='DYNAMIC'">_IPP_PARALLEL_DYNAMIC</IPP_THREADING_LINKING>
+
+    <IPP_VERSION_FOLDER>v$(IPP_SOLUTION_VERSION)</IPP_VERSION_FOLDER>
+</PropertyGroup>
+
+
+  <!-- definitions  --> 
+  <PropertyGroup Label="UserMacros">
+    
+    <IPP_DEFS_INCLUDED>I</IPP_DEFS_INCLUDED>
+    
+    <EXTERNAL_LIBRARIES_BASE_FOLDER>E:\3rdPartyLibrary\</EXTERNAL_LIBRARIES_BASE_FOLDER>
+
+    <IPP_ROOT_DIR>$(EXTERNAL_LIBRARIES_BASE_FOLDER)SOFTWARE\IPP\$(IPP_VERSION_FOLDER)\</IPP_ROOT_DIR>
+   
+    <IPP_INCLUDE_DIR>$(IPP_ROOT_DIR)ipp\include\</IPP_INCLUDE_DIR>
+    <IPP_LIB_ROOT_DIR>$(IPP_ROOT_DIR)ipp\lib\</IPP_LIB_ROOT_DIR> 
+    <IPP_COMPILER_LIB_ROOT_DIR>$(IPP_ROOT_DIR)compiler\lib\</IPP_COMPILER_LIB_ROOT_DIR> 
+    
+    <IPP_LIB_DIR Condition="'$(Platform)'=='Win32'">$(IPP_LIB_ROOT_DIR)ia32\</IPP_LIB_DIR> 
+    <IPP_LIB_DIR Condition="'$(Platform)'=='x64'">$(IPP_LIB_ROOT_DIR)intel64\</IPP_LIB_DIR>
+  
+    <IPP_COMPILER_LIB_DIR Condition="'$(Platform)'=='Win32'">$(IPP_COMPILER_LIB_ROOT_DIR)ia32\</IPP_COMPILER_LIB_DIR> 
+    <IPP_COMPILER_LIB_DIR Condition="'$(Platform)'=='x64'">$(IPP_COMPILER_LIB_ROOT_DIR)intel64\</IPP_COMPILER_LIB_DIR>
+      
+    <IPP_REDIST_IPP_DIR Condition="'$(Platform)'=='Win32'">$(IPP_ROOT_DIR)redist\ia32\ipp</IPP_REDIST_IPP_DIR>
+    <IPP_REDIST_IPP_DIR Condition="'$(Platform)'=='x64'">$(IPP_ROOT_DIR)redist\intel64\ipp</IPP_REDIST_IPP_DIR>
+    
+    <IPP_REDIST_COMPILER_DIR Condition="'$(Platform)'=='Win32'">$(IPP_ROOT_DIR)redist\ia32\compiler</IPP_REDIST_COMPILER_DIR>
+    <IPP_REDIST_COMPILER_DIR Condition="'$(Platform)'=='x64'">$(IPP_ROOT_DIR)redist\intel64\compiler</IPP_REDIST_COMPILER_DIR>
+    
+  </PropertyGroup>
+ 
+</Project>

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PropertySheetDisplayName>llf</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <TBB_SOLUTION_VERSION>4.4U3</TBB_SOLUTION_VERSION>
+    <BOOST_SOLUTION_VERSION>1.60</BOOST_SOLUTION_VERSION>
+    <IPP_SOLUTION_VERSION>8.2.1</IPP_SOLUTION_VERSION>
+    <IPP_SOLUTION_THREADING>SINGLE</IPP_SOLUTION_THREADING>
+    <IPP_SOLUTION_LINK_TYPE>STATIC</IPP_SOLUTION_LINK_TYPE>
+  </PropertyGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="Reference To IPP.props" />
+    <Import Project="Reference To TBB.props" />
+    <Import Project="Copy TBB.props" />
+    <Import Project="Reference To Boost.props" />
+    <Import Project="Copy Boost.props" />
+    <Import Project="Reference To OpenCv 3.1.0Build.props" />
+  </ImportGroup>
+ 
+</Project>

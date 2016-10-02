@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- One time include  --> 
+	<PropertyGroup Label="UserMacros">
+  	<BOOST_DEF_INCLUDED>I</BOOST_DEF_INCLUDED>
+  </PropertyGroup>
+	
+ <ImportGroup Label="PropertySheets">
+    <Import Condition="'$(COMMON_DEFS_INCLUDED)'!='I' AND Exists('..\Common\CommonDefinitions.props')" Project="..\Common\CommonDefinitions.props" />
+  </ImportGroup>
+
+  
+  <!-- Controllo presenza delle macro di scelta della versione -->
+<Target Name="Validate_Boost_PropertySheets" BeforeTargets="ClCompile">
+    <Error
+        Text="La macro BOOST_SOLUTION_VERSION deve essere definita. Verificare la presenza del property sheet di solution adeguato"
+        Condition="'$(BOOST_SOLUTION_VERSION)' == ''" />
+</Target>
+
+  <PropertyGroup Label="UserMacros">
+  	
+ 	<EXTERNAL_LIBRARIES_BASE_FOLDER>e:\3rdPartyLibrary\</EXTERNAL_LIBRARIES_BASE_FOLDER>    	
+
+  	<!-- Unversioned macro  --> 
+	<BOOST_ROOT_DIR Condition="'$(BOOST_SOLUTION_VERSION)'=='1.58'">$(EXTERNAL_LIBRARIES_BASE_FOLDER)boost\boost_1_58_0\</BOOST_ROOT_DIR>
+	<BOOST_VERSION Condition="'$(BOOST_SOLUTION_VERSION)'=='1.58'">1_58</BOOST_VERSION>
+  <BOOST_ROOT_DIR Condition="'$(BOOST_SOLUTION_VERSION)'=='1.60'">$(EXTERNAL_LIBRARIES_BASE_FOLDER)boost\boost_1_60_0\</BOOST_ROOT_DIR>
+  <BOOST_VERSION Condition="'$(BOOST_SOLUTION_VERSION)'=='1.60'">1_60</BOOST_VERSION>
+
+
+  	<BOOST_DEBUG_SIGNATURE Condition="'$(Configuration)'=='Debug'">-gd</BOOST_DEBUG_SIGNATURE>
+    <BOOST_DEBUG_SIGNATURE Condition="'$(Configuration)'=='Release'"></BOOST_DEBUG_SIGNATURE>
+    
+	<BOOST_SIGNATURE>$(BOOST_DEBUG_SIGNATURE)-$(BOOST_VERSION)</BOOST_SIGNATURE>
+
+	<BOOST_INCLUDE_DIR>$(BOOST_ROOT_DIR)</BOOST_INCLUDE_DIR> 
+
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='Win32' and '$(PlatformToolset)'=='v100'">$(BOOST_ROOT_DIR)lib32-msvc-10.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='Win32' and '$(PlatformToolset)'=='v120'">$(BOOST_ROOT_DIR)lib32-msvc-12.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='Win32' and '$(PlatformToolset)'=='v120_xp'">$(BOOST_ROOT_DIR)lib32-msvc-12.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='Win32' and '$(PlatformToolset)'=='v140'">$(BOOST_ROOT_DIR)lib32-msvc-14.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='x64' and '$(PlatformToolset)'=='v100'">$(BOOST_ROOT_DIR)lib64-msvc-10.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='x64' and '$(PlatformToolset)'=='v120'">$(BOOST_ROOT_DIR)lib64-msvc-12.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='x64' and '$(PlatformToolset)'=='v120_xp'">$(BOOST_ROOT_DIR)lib64-msvc-12.0\</BOOST_LIB_DIR>
+    <BOOST_LIB_DIR Condition="'$(Platform)'=='x64' and '$(PlatformToolset)'=='v140'">$(BOOST_ROOT_DIR)lib64-msvc-14.0\</BOOST_LIB_DIR>
+
+    <BOOST_PLATFORMTOOLSET Condition="'$(PlatformToolset)'=='v100'">vc100</BOOST_PLATFORMTOOLSET>
+    <BOOST_PLATFORMTOOLSET Condition="'$(PlatformToolset)'=='v120'">vc120</BOOST_PLATFORMTOOLSET>
+    <BOOST_PLATFORMTOOLSET Condition="'$(PlatformToolset)'=='v120_xp'">vc120</BOOST_PLATFORMTOOLSET>
+    <BOOST_PLATFORMTOOLSET Condition="'$(PlatformToolset)'=='v140'">vc140</BOOST_PLATFORMTOOLSET>
+
+	<BOOST_LIB_POSTFIX>$(BOOST_PLATFORMTOOLSET)-mt$(BOOST_SIGNATURE)</BOOST_LIB_POSTFIX>
+    
+  </PropertyGroup>
+ 
+</Project>

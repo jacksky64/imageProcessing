@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- One time include  --> 
+	<PropertyGroup Label="UserMacros">
+  	<BOOST_COPY_INCLUDED>I</BOOST_COPY_INCLUDED>
+  </PropertyGroup>
+  
+  <!-- Boost-Full definitions --> 
+  <ImportGroup Label="PropertySheets">
+  	<Import Condition="'$(BOOST_DEF_INCLUDED)'!='I'" Project="Definitions Boost.props" />
+  </ImportGroup>
+  
+  <!-- boost copy --> 
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>xcopy /D /Y "$(BOOST_LIB_DIR)boost_thread-$(BOOST_LIB_POSTFIX).dll" "$(OutDir)"
+xcopy /D /Y "$(BOOST_LIB_DIR)boost_system-$(BOOST_LIB_POSTFIX).dll" "$(OutDir)"   
+xcopy /D /Y "$(BOOST_LIB_DIR)BOOST_CHRONO-$(BOOST_LIB_POSTFIX).dll" "$(OutDir)" 
+xcopy /D /Y "$(BOOST_LIB_DIR)BOOST_DATE_TIME-$(BOOST_LIB_POSTFIX).dll" "$(OutDir)"    	
+%(Command)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+</Project>
