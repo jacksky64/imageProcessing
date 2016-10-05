@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration target="target.mlapps" target-name="Package App" name="Active Contours implementation &amp; test platform GUI" location="D:\Kolian\Matlab_scripts\FileExchange\Activeontours" file="D:\Kolian\Matlab_scripts\FileExchange\Activeontours\Active Contours implementation &amp; test platform GUI.prj" build-checksum="1484381674">
+    <param.appname>Active Contours implementation &amp; test platform GUI</param.appname>
+    <param.authnamewatermark>Nikolay S</param.authnamewatermark>
+    <param.email />
+    <param.company />
+    <param.icon />
+    <param.summary>Implementation and demonstration of several active contours segmentation methods.</param.summary>
+    <param.description>This program was written as a part of the “Medical Imaging” course. Together with Alex Blekhman (http://www.mathworks.com/matlabcentral/fileexchange/authors/26540)- my partner we have implemented the paper "Active Contours without Edges" by Tony Chan and Luminita Vese. We wrapped it up with a GUI to allow easy parameters change and segmentation process view and results storage for future analysis. 
+Later on we have added two existing implementation of additional methods to compare between the methods, and to learn each. The method are: 
+1) 
+Implementation of "Level Set Evolution Without Re-initialization: A New Variational Formulation" in Proceedings of CVPR'05, vol. 1, pp. 430-436. 
+Author: Chunming Li, all rights reserved. 
+E-mail: li_chunming@hotmail.com 
+URL:  http://www.engr.uconn.edu/~cmli/ 
+2) 
+Implementation of "Localizing Region Based Active Contours" in “Image Processing, IEEE Transactions on “ im Nov. 2008 by Lankton and Tannenbaum. 
+Coded by: Shawn Lankton (www.shawnlankton.com)
+
+This is the place to thank both authors for the code contribution.
+
+The users who download this code are welcome to play with it, to try and learn the above segmentation schemes. Moreover, additional methods can be added, and the GUI may serve as a convenient platform for segmentation methods understanding, analysis and comparisons. 
+Best segmenting you all!</param.description>
+    <param.screenshot>D:\Kolian\Matlab_scripts\FileExchange\preview.jpg</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+      <item>Signal Processing Toolbox</item>
+      <item>Image Processing Toolbox</item>
+      <item>Statistics Toolbox</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+      <item>8</item>
+      <item>17</item>
+      <item>19</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.0</item>
+      <item>6.18</item>
+      <item>8.1</item>
+      <item>8.1</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}\Active Contours implementation &amp; test platform GUI.mlappinstall</param.output>
+    <param.guid>e78c8aa2-ba65-436c-805a-b05619730ae5</param.guid>
+    <unset>
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.version />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\ActiveCountorsGUI.m</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}\ActiveContoursWihoutEdges.m</file>
+      <file>${PROJECT_ROOT}\ActiveCountorsGUI.fig</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BallsClusters.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BallsClustersLightBalls.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BlurredBallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BlurredLenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BlurredShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\BlurredShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Brodats1.tiff</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Brodats2.tiff</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Egypt8.tif</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Egypt9.tif</file>
+      <file>${PROJECT_ROOT}\Images\128X128\EuropeNight1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\EuropeNight2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\GradientBall.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\HiResSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Lena.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\LenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\LinesSketch.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\monkey.png</file>
+      <file>${PROJECT_ROOT}\Images\128X128\PaperSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Shapes.JPG</file>
+      <file>${PROJECT_ROOT}\Images\128X128\ShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\ShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\128X128\Thumbs.db</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BallsClusters.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BallsClustersLightBalls.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BlurredBallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BlurredLenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BlurredShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\BlurredShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Brodats1.tiff</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Brodats2.tiff</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Egypt8.tif</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Egypt9.tif</file>
+      <file>${PROJECT_ROOT}\Images\256X256\EuropeNight1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\EuropeNight2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\GradientBall.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\HiResSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Lena.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\LenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\LinesSketch.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\monkey.png</file>
+      <file>${PROJECT_ROOT}\Images\256X256\PaperSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\ShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\ShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\256X256\Thumbs.db</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BallsClusters.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BallsClustersLightBalls.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BlurredBallsOnGray.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BlurredLenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BlurredShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\BlurredShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\Brodats1.tiff</file>
+      <file>${PROJECT_ROOT}\Images\64X64\Brodats2.tiff</file>
+      <file>${PROJECT_ROOT}\Images\64X64\Egypt8.tif</file>
+      <file>${PROJECT_ROOT}\Images\64X64\Egypt9.tif</file>
+      <file>${PROJECT_ROOT}\Images\64X64\EuropeNight1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\EuropeNight2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\GradientBall.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\HiResSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\Lena.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\LenaText.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\LinesSketch.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\monkey.png</file>
+      <file>${PROJECT_ROOT}\Images\64X64\PaperSpiral.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\ShapesOnGray1.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\ShapesOnGray2.jpg</file>
+      <file>${PROJECT_ROOT}\Images\64X64\twocells.bmp</file>
+      <file>${PROJECT_ROOT}\Images\64X64\twoObj.bmp</file>
+      <file>${PROJECT_ROOT}\InfoFiles\ActiveContoursAbout.htm</file>
+      <file>${PROJECT_ROOT}\InfoFiles\ActiveContoursHelp.htm</file>
+      <file>${PROJECT_ROOT}\LevelSetEvolutionWithoutReinitialization.m</file>
+      <file>${PROJECT_ROOT}\localized_seg.m</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}\Images</file>
+      <file>${PROJECT_ROOT}\InfoFiles</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file name="Active Contours implementation &amp; test platform GUI.mlappinstall" location="D:\Kolian\Matlab_scripts\FileExchange\Activeontours" optional="false">D:\Kolian\Matlab_scripts\FileExchange\Activeontours\Active Contours implementation &amp; test platform GUI.mlappinstall</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2012b</root>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>6.1</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
+

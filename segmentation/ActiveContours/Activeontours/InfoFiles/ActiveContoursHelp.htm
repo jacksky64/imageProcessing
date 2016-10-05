@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Active Contours Help page</title>
+<style type="text/css">
+ p.MsoNormal
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:0in;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	}
+p.MsoListParagraphCxSpFirst
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	}
+p.MsoListParagraphCxSpMiddle
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:0in;
+	margin-left:.5in;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	}
+p.MsoListParagraphCxSpLast
+	{margin-top:0in;
+	margin-right:0in;
+	margin-bottom:10.0pt;
+	margin-left:.5in;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	}
+.style1 {
+				font-size: larger;
+}
+.style4 {
+				font-family: Calibri;
+}
+.style6 {
+				font-size: medium;
+}
+</style>
+</head>
+
+<body>
+
+<p class="MsoNormal" style="font-family: Impact; font-size: larger; text-align: center; height: 15px;">
+&quot;Active contours&quot; <u>
+&nbsp;Help page.</u></p>
+<p class="MsoNormal" style="font-size: larger">This GUI goal is to supply the 
+user intuitive and easy to use tool to get acquainted and to compare several 
+snakes methods for object segmentation/boundaries detection. <o:p></o:p>
+</p>
+<p class="MsoNormal" style="font-size: larger">
+<o:p>For basic GUI use of this tool please follow those instructions:</o:p></p>
+<ol>
+				<li>
+				<p class="MsoNormal">
+				<span style="mso-spacerun:yes" class="style1">&nbsp;</span><span class="style4">Choose 
+				image file for segmentation using Load Image File button 
+				<span style="line-height: 115%">
+				<o:p>(some test images are supplied in the Images library).</o:p></span></span></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-family: Calibri">
+				<span style="mso-spacerun:yes">&nbsp;</span><span class="style6">Choose 
+				noise model parameters in <span style="mso-spacerun:yes">&nbsp;</span>Noise 
+				Model panel.</span></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-size: medium">
+				<span class="style4">Choose 
+				the Gaussian blur filer parameters (</span>N<span class="style4">,sigma) in
+				<span style="mso-spacerun:yes">&nbsp;Blur 
+				(denoise)</span> panel (default values are N=16,
+				sigma=0).</span></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-size: medium">
+				Choose 
+				the Color space and color dimension in
+				<span style="mso-spacerun:yes">&nbsp;</span>Color 
+				space panel (default choice is YCbCr and Y).</p>
+				</li>
+				<li>
+				<p class="MsoNormal">
+				Choose 
+				the contour based segmentation algorithm to apply-using the Applied Algorithm panel.</p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-family: Calibri">
+				Set desired 
+				algorithm parameters- using the Alg. parameters panel.</p>
+				</li>
+				<li>
+				<p class="MsoNormal">
+				Choose 
+				your display settings using the Display Menu panel<span style="line-height: 115%"><o:p>.</o:p></span></p>
+				</li>
+				<li>
+				<p class="MsoNormal">
+				Choose 
+				refresh rate of displayed images and save rate of saved images
+				<span style="mso-spacerun:yes">&nbsp;</span><span style="line-height: 115%"><o:p>- 
+				using the appropriate edit button in the I/O panel.</o:p></span></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-family: Calibri">
+				Choose 
+				output path for saved images during algorithm application 
+				(default - current directory). </p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-family: Calibri">
+				<span class="style4"><span style="mso-spacerun:yes">C</span>hoose 
+				number of iterations suiting your needs and Finally press Run to 
+				enjoy the magic </span>
+				<span style="line-height: 115%" class="style1">
+				<o:p>.</o:p></span></p>
+				</li>
+</ol>
+<p class="MsoNormal" style="color: #228B22">
+<o:p></o:p>
+</p>
+<p class="MsoNormal" style="font-size: larger">
+<o:p>Advanced use will involve:</o:p></p>
+<ol>
+				<li>
+				<p class="MsoNormal" style="font-size: larger">
+				<o:p>&nbsp;Modification of above algorithms.</o:p></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-size: larger">
+				<o:p>Adding new algorithms to the GUI.</o:p></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-size: larger">
+				<o:p>Comparing algorithms, especially in cases where some will 
+				fail.</o:p></p>
+				</li>
+				<li>
+				<p class="MsoNormal" style="font-size: larger">
+				<o:p>And more...</o:p></p>
+				</li>
+</ol>
+<p class="MsoNormal"><span style="mso-spacerun: yes" class="style1">&nbsp;&nbsp;&nbsp;
+&nbsp;</span><span class="style1">Regards,</span><span style="font-size: 12.0pt; line-height: 115%"><o:p></o:p></span></p>
+<p class="MsoNormal"><span style="mso-spacerun: yes" class="style1">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;</span><span class="style1">Nikolay &amp; Alex.</span><span style="font-size: 12.0pt; line-height: 115%"><o:p></o:p></span></p>
+<p class="MsoNormal" style="font-family: Impact; font-size: large; text-align: left; height: 15px;">
+<o:p></o:p>
+</p>
+
+</body>
+
+</html>

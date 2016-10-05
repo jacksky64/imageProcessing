@@ -1,0 +1,23 @@
+It follows a list references upon which these methods are based:
+
+I.Larrabide. Processamento de imagens via Derivada Topológica e suas aplicações na modelagem e
+simulação computacional do Sistema Cardiovascular Humano. DSc Tesis. Laboratório Nacional
+de Computação Científica - LNCC/MCT. Petrópolis - RJ, Brazil. March 2007.
+  --> http://www.lncc.br/~nacho/DScTesis_ILarra_final.pdf
+
+I. Larrabide, R. A. Feijóo, A. A. Novotny, E. Taroco and M. Masmoudi. An Image Segmentation
+Method Based on a Discrete Version of the Topological Derivative. www.wcsmo6.org. WCSMO6 - 6th
+World Congress on Structural and Multidisciplinary Optimization, Rio de Janeiro, Brazil, 30th
+May-03rd June 2005.
+
+I. Larrabide, R. A. Feijóo, E. Taroco, A. Novotny. Configurational Derivative As a Tool for Image
+Segmentation. Proceedings of the ECCM 2006. LNEC - Lisbon, Portugal 5th-9th June 2006.
+
+I. Larrabide, R. A. Feijóo, A. A. Novotny and E. A. Taroco. Topological Derivative: A Tool for
+Image Processing. Computers & Structures - An International Journal. Editors: K. J. Bathe & B. H.
+V. Topping. Guest Editor for the Special Issue: C. A. Mota Soares, M. Bendsoe, K. K. Choi and J.
+ Herskovits. Accepted for publication - December 2006.
+
+I. Larrabide, A. A. Novotny, M. Masmoudi, R. A. Feijóo and E. A. Taroco. Topological Derivative
+as a Tool for Image Processing - Part I: Image Segmentation. IEEE Transactions in Image Processing.
+Submitted - December 2006.
