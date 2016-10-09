@@ -1,6 +1,6 @@
 {
   "name": "Imageprocessing",
   "tagline": "Image processing libraries",
-  "body": "# Welcome to image processing\r\n\r\nMatlab collection of libraries for image processing, computer vision, machine learning.\r\n\r\n## Authors and Contributors\r\n\r\n* [peter kovesi](http://www.peterkovesi.com)\r\n* [gabriel peyre](http://gpeyre.github.io/)\r\n\r\n",
+  "body": "# Welcome to image processing\r\n\r\nMatlab collection of libraries for image processing, computer vision, machine learning.\r\n\r\n\r\n",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
