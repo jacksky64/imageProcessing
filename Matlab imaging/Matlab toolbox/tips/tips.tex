@@ -1,0 +1,804 @@
+\documentclass{article}
+
+\usepackage{xspace}
+\usepackage{tips-style}
+
+
+\begin{document}
+
+
+\title{\textsc{Matlab} Tips and Tricks}
+
+\author{ Gabriel Peyr\'e \\ CEREMADE, Universit\'e Paris Dauphine \\ \texttt{gabriel.peyre@ceremade.dauphine.fr} }
+
+\date{\today}
+
+
+\maketitle
+
+\noindent First keep in mind that this is \textbf{not} a
+\textsc{Matlab} tutorial. This is just a list of tricks I have
+found useful while writing my toolboxes available on the Matlab Central repository
+\begin{center}
+    \texttt{http://www.mathworks.com/matlabcentral/}
+\end{center}
+You can e-mail me if you have corrections about these pieces of
+code, or if you would like to add your own tips to those described
+in this document.
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       General Programming Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{General Programming Tips}
+
+
+\tip{Suppress entries in a vector.}
+{
+  x( 3:5 ) = [];
+}
+
+\tip{Reverse a vector.}
+{
+    x = x(end:-1:1);
+}
+
+\tip{Use cell arrays to store stuff of various types.}
+{
+    x = \{\}; x\{end+1\} = 1; x\{end+1\} = [1 2]; \comment{build incrementally} \\
+    x = \{x\{end:-1:1\}\}; \comment{reverse the same way as a vector}
+}
+
+\tip{Compute the running time of a function call.}
+{
+    tic; fft(rand(500)); disp( ['it takes ' num2str(toc) 's.'] );
+}
+
+\tip{Make a array full of \t{NaN}}
+{
+    \comment{guess which one is the fastest ?}  \\
+    tic; NaN*ones(2000,2000); toc;  \\
+    tic; repmat(NaN,2000,2000); toc;    \\
+}
+
+\tip{Turn an nD array into a vector.}
+{
+    x = x(:);
+}
+
+\tip{Compute the maximum value of an nD array.}
+{
+    m = max(x(:));
+}
+
+\tip{Access a matrix from a list of entries. Here, we have \t{I = [I1; I2]} and \t{y(i) = M( I1(i), I2(i) )} }
+{
+    J = sub2ind(size(M), I(1,:),I(2,:) ); \\
+    y = M(J);
+}
+
+\tip{Create a function that take optional arguments in a struct.}
+{
+    \pfunction y = f(x,options)   \\
+    \comment{parse the struct}\\
+    \pif{} nargin<2                 \\
+    \q options.null = 0; \comment{ force creation of options } \\
+    \pend \\
+    \pif ~isfield(options, 'a')   \\
+    \q options.a = 1; \comment{ default value }    \\
+    \pend \\
+    a = options.a;  \\
+    \pif ~isfield(options, 'b')   \\
+    \q options.b = 1; \comment{ default value }    \\
+    \pend \\
+    b = options.b;  \\
+    \comment{Here the body of the function ...}
+}
+
+\tip{A cleaner way to manage an options data structure is to define a function to do the job.}
+{
+	\comment{all the optional arguments are in options}\\
+	\pfunction fun(x,y,options)\\
+	arg = getoptions(options, 'arg', 'default');\\
+	\\
+	\comment{here is the definition of the function}\\
+	\pfunction v = getoptions(options, name, v, mendatory); \\
+	\pif isfield(options, name)\\
+    \q v = eval(['options.' name ';']); \\
+    \pend\\
+}
+
+\tip{How to duplicate a character \t{n} times.}
+{
+    str = char( zeros(n,1)+'*' );       \\
+}
+
+\tip{Assign value \t{v} in a nD array at a position \t{ind} (lenth-\t{n} vector).}
+{
+    ind = num2cell(ind);       \\
+    x( ind\{:\} ) = v;   \comment{the comma-separated trick}    \\
+}
+
+\tip{Write a  function \t{fun(a,b,c)} that can takes an arbitrary number of arguments.}
+{
+    \comment{first method, simple but long}        \\
+    \pfunction fun(a,b,c)        \\
+    \pif nargin<1        \\
+    \q    a = 0.1246;        \\
+    \pend        \\
+    \pif nargin<2        \\
+    \q    b = 1.2346;        \\
+    \pend        \\
+    \pif nargin<3        \\
+    \q    c = 8.7643;        \\
+    \pend        \\
+    \comment{second method, much more elegant}        \\
+    \pfunction fun(args)        \\
+    default\_values              = \{0.1246,1.2346,8.7643\};        \\
+    args\_present                = ~cellfun(‘isempty’,args);        \\
+    default\_values(args\_presen) = args(args\_present);        \\
+    {[a b c]}    = deal(default\_values{:});
+}
+
+
+\tip{Remove the ticks from a drawing.}
+{
+    set(gca, 'XTick', []);  \\
+    set(gca, 'YTick', []);
+}
+
+\tip{Find the angle that makes a 2D vector \t{x} with the vector \t{[1,0]}}
+{
+    \comment{just the angle}    \\
+    theta = atan2(x(2),x(1));\\
+    \comment{if you want to compute the full polar decomposition}\\
+    {[theta,r]} = cart2pol(x);
+}
+
+\tip{Try to allocate memory before adding new data to an array}
+{
+    n = 10000; a = [];  \\
+    tic;                \\
+    \pfor i=1:n           \\
+    \q    a(i) = 1; \comment{this will reallocate size}   \\
+    \pend \\
+    toc; tic;   \\
+    \pfor i=1:n   \\
+    \q    a(i) = 1;   \\
+    \pend \\
+    toc;    \comment{should be 15 times faster}
+}
+
+\tip{Enlarging the font for the plot display.}
+{
+    set(0,'defaultaxesfontsize',14,'defaultaxeslinewidth',0.9,... \\
+          'defaultlinelinewidth',1,'defaultpatchlinewidth',0.9); 
+}
+
+\tip{Enlarging the size of the line and markers for the plot display.}
+{
+	h = plot(\ldots); \\
+	set(h, 'LineWidth', 2);\\
+	set(h, 'MarkerSize', 10);
+}	
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       Input/Output tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Input/Output tips}
+
+\tip{Create a graphical waitbar.}
+{
+    n = 100;       \\
+    h = waitbar(0,'Waiting ...');       \\
+    \pfor i=1:n       \\
+    \q waitbar(i/n);       \\
+    \q \comment{here perform some stuff }      \\
+    \pend       \\
+    close(h);       \\
+}
+
+\tip{Output a string without carriage return.}
+{
+    fprintf('Some Text');       \\
+}
+
+\tip{Saving and loading an image.}
+{
+    \comment{saving current display}    \\
+    saveas(gcf, 'my\_image', 'png'); \\
+    \comment{saving a 2D or 3D matrix into an image}    \\
+    imwrite(M, 'my\_image', 'png'); \comment{M should have its values in [0,1]}\\
+    \comment{loading into a 2D (gray) or 3D (color) matrix} \\
+    M = double( imread( 'my\_image.png' ) );
+}
+
+\tip{Saving and loading a matrix \t{M} in a binary file.}
+{
+    [n,p] = size(M);
+    \comment{saving}\\
+    str = 'my\_file';   \comment{name of the file} \\
+    fid = fopen(str,'wb');  \\
+    \pif fid<0    \\
+    \q error(['error writing to file ', str]);  \\
+    \pend    \\
+    fwrite(fid,M','double'); \comment{store it row-wise format}   \\
+    fclose(fid);    \\
+    \comment{loading}\\
+    fid = fopen(str,'rb');  \\
+    \pif fid<0    \\
+    \q error(['error reading file ',str]);  \\
+    \pend    \\
+    {[M, cnt]} = fread(fid,[n,p],'double'); M = M';   \\
+    fclose(fid);    \\
+    \pif cnt~=n*p \\
+        error(['Error reading file ', str]);    \\
+    \pend \\
+}
+
+\tip{Writing/Reading to a text file a list of 3-uplets.}
+{
+    \comment{A is a matrix with 3 rows.} \\
+    fid = fopen(filename,'wt'); \\
+    fprintf(fid, '\%f \%f \%f$\backslash{}$n', A);\\
+    fclose(fid);
+    \comment{Retrieving the values back from file to matrix B.} \\
+    fid = fopen(filename,'r');\\
+    {[B,cnt]} = fscanf(fid,'\%f \%f \%f');
+}
+
+\tip{Building an AVI file.}
+{
+    mov = avifile('filename');  \\
+    \pfor i=1:nbrframes \\
+        \comment{draw some stuff here}  \\
+        F = getframe(gca);  \\
+        mov = addframe(mov,F);     \\
+    \pend   \\
+    mov = close(mov);
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                       General Mathematical Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{General Mathematical Tips}
+
+\tip{Rescale the entries of a vector \t{x} so that it spans $[0,1]$}
+{
+    m = min(x(:)); M = max(x(:));   \\
+    x = (b-a) * (x-m)/(M-m) + a;
+}
+
+\tip{Generate \t{n} points evenly sampled.}
+{
+    x = 0:1/(n-1):1;  \comment{faster than linspace}     \\
+}
+
+\tip{Compute the $L^2$ squared norm of a vector or matrix \t{x}.}
+{
+    m = sum(x(:).\hatverb{}2);       \\
+}
+
+\tip{Subsample a vector \t{x} or an image \t{M} by a factor 2.}
+{
+  x = x(1:2:end);     \comment{useful for wavelet transform}  \\
+  M = M(1:2:end,1:2:end);       \\
+}
+
+\tip{Compute centered finite differences.}
+{
+    D1 = [x(2:end),x(end)]; \\
+    D2 = [x(1),x(1:end-1)]; \\
+    y = (D1-D2)/2;
+}
+
+\tip{Compute the prime number just before \t{n}}
+{
+    n = 150; \\
+    P = primes(n); n = P(end);
+}
+
+\tip{Compute \t{J}, the reverse of a permutation \t{I}, i.e. an array
+    which contains the number \t{1:n} in arbitrary order.}
+{
+    J(I) = 1:length(I);
+}
+
+\tip{Shuffle an array \t{x}.}
+{
+    y = x( randperm(length(x)) );
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Advanced Mathematical Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Advanced Mathematical Tips}
+
+\tip{Generate \t{n} points \t{x} sampled uniformly at random on a sphere.}
+{
+  \comment{tensor product gaussian is isotropic} \\
+  x = randn(3,n);       \\
+  d = sqrt( x(1,:).\hatverb{}2+x(2,:).\hatverb{}2+x(2,:).\hatverb{}2 );       \\
+  x(1,:) = x(1,:)./d;       \\
+  x(2,:) = x(2,:)./d;       \\
+  x(3,:) = x(3,:)./d;       \\
+}
+
+\tip{Create a random vector \t{x} with \t{s} non-zero entry ($s$-sparse vector)}
+{
+	sel = randperm(n); sel = sel(1:s);\\
+	x = zeros(n,1); x(sel) = 1;
+}
+
+\tip{Construct a polygon \t{x} whose ith sidelength is \t{s(i)}. Here
+  \t{x(i)} is the complex affix of the ith vertex.}
+{
+  theta = [0;cumsum(s)];       \\
+  theta = theta/theta(end);       \\
+  theta = theta(1:(end-1));       \\
+  x = exp(2i*pi*theta);       \\
+  L = abs(x(1)-x(2));       \\
+  x = x*s(1)/L;     \comment{rescale the result}  \\
+}
+
+\tip{Compute \t{y}, the inverse of an integer \t{x} modulo a prime \t{p}.}
+{
+  \comment{use Bezout thm}\\
+  {[u,y,d]} = gcd(x,p);       \\
+  y = mod(y,p);       \\
+}
+
+\tip{Compute the curvilinear abscise \t{s} of a curve \t{c}.
+  Here, \t{c(:,i)} is the ith point of the curve.}
+{
+  D = c(:,2:end)-c(:,1:(end-1));       \\
+  s = zeros(size(c,2),1);       \\
+  s(2:end) = sqrt( D(1,:).\hatverb{}2 + D(2,:).\hatverb{}2 );       \\
+  s = cumsum(s);       \\
+}
+
+\tip{Compute the 3D rotation matrix \t{M} around an axis \t{v}}
+{
+  \comment{taken from the OpenGL red book}\\
+  v = v/norm(v,'fro');       \\
+  S = [0 -v(3) v(2); v(3) 0 -v(1); -v(2) v(1) 0];       \\
+  M = v*transp(v) + cos(alpha)*(eye(3) - v*transp(v)) + sin(alpha)*S;       \\
+}
+
+
+\tip{Compute a VanderMonde matrix \t{M} i.e. \t{M(i,j)=x(i)\hatverb{}j} for  \t{j=0:d}. }
+{
+    n = length(x);
+    \comment{first method}  \\
+    {[J,I]} = meshgrid(0:d,1:n);       \\
+    A = x(I).\hatverb{}J;       \\
+    \comment{second method, less elegant but faster}   \\
+    A = ones(n);    \\
+    \pfor j = 2:n     \\
+    \q    A(:,j) = x.*A(:,j-1);   \\
+    \pend
+}
+
+
+\tip{Threshold (i.e. set to 0) the entries below \t{T}.}
+{
+    \comment{first solution }\\
+    x = (abs(x)>=T) .* x;       \\
+    \comment{second one : nearly 2 times slower } \\
+    I = find(abs(x)<T); x(I) = 0;
+}
+
+\tip{Same, but with soft-thresholding}
+{
+	s = abs(x) - t; \\
+	s = (s + abs(s))/2; \\
+	y = sign(x).*s;
+}
+
+\tip{Projection of a vector \t{x} on the $\ell^1$ ball $\{y ; \sum_i |y(i)|=\lambda \}$.}
+{
+\comment{ compute the thresholded L1 norm at each sampled value }\\
+s0 = sort( abs(x(:)) ); \\
+s = cumsum( s0(end:-1:1) ); s = s(end:-1:1); \\
+s = s - s0 .* (length(x(:)):-1:1)'; \\
+\comment{ compute the optimal threshold by interpolation } \\
+{[i,tmp]} = max( find(s>lambda) ); \\
+\pif isempty(i) \\
+\q    y = x; return; \\
+\pend \\
+i = i(end); \\
+t = ( s(i+1)-lambda )/( s(i+1)-s(i) ) * (s0(i)-s0(i+1)) + s0(i+1); \\
+\comment{ do the actual thresholding } \\
+y = x; y(abs(x)<t) = 0; \\
+y(abs(x)>=t) = y(abs(x)>=t) - sign(x(abs(x)>=t))*t; \\
+}
+
+\tip{Keep only the \t{n} biggest coefficients of a signal \t{x} (set the others to 0).}
+{
+    [tmp,I] = sort(abs(x(:)));
+    x( I(1:end-n) ) = 0;
+}
+
+\tip{Draw a 3D sphere.}
+{
+    p = 20;  \comment{ precision }       \\
+    t = 0:1/(p-1):1;\\
+    {[th,ph]} = meshgrid( t*pi,t*2*pi );       \\
+    x = cos(th);       \\
+    y = sin(th).*cos(ph);       \\
+    z = sin(th).*sin(ph);       \\
+    surf(x,y,z, z.*0);       \\
+    \comment{some pretty rendering options}\\
+    shading interp; lighting gouraud;       \\
+    camlight infinite; axis square; axis off;
+}
+
+\tip{Project 3D points on a 2D plane (best fit plane). \t{P(:,k)} is the kth point.}
+{
+    \pfor i=1:3   \comment{ substract mean }      \\
+    \q P(i,:) = P(i,:) - mean(P(i,:));       \\
+    \pend       \\
+    C = P*P'; \comment{ covariance matrix }      \\
+    \comment{project on the two most important eigenvectors }      \\
+    {[V,D]} = eigs(C);       \\
+    Q = V(:,1:2)'*P;       \\
+}
+
+\tip{Compute the pairwise distance matrix \t{D} between a set of \t{p} points in ${R}^d$. Here,
+\t{X(:,i)} is the \t{i}th point.}
+{
+    \q X2 = sum(X.\hatverb{}2,1);
+    \q D = repmat(X2,p,1) + repmat(X2',1,p)-2*X'*X;
+}
+
+\tip{Orthogonalize a matrix \t{A} by projection on the set of orthogonal matrix (not Gram-Schmidt)}
+{
+	{[U,D,V]} = svd(A); A = U*V';
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Signal Processing Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Signal Processing Tips}
+
+
+\tip{Compute circular convolution of \t{x} and \t{y}.}
+{
+    \comment{use the Fourier convolution thm} \\
+    z = real( ifft( fft(x).*fft(y) ) );       \\
+}
+
+\tip{Build a 1D gaussian filter of variance \t{s}.}
+{
+    x = -1/2:1/(n-1):1/2;   \\
+    f = exp( -(x.\hatverb{}2)/(2*s\hatverb{}2) ); \\
+    f = f / sum(sum(f));
+}
+
+
+\tip{Perform a 1D convolution of signal \t{f} and filter \t{h}
+    with symmetric boundary conditions. The center of the filter is 0
+    for odd length filter, and 1/2 otherwise}
+{
+    n = length(x); p = length(h);   \\
+    \pif mod(p,2)==1    \\
+    \q    d1 = (p-1)/2; d2 = (p-1)/2;   \\
+    \pelse  \\
+    \q d1 = p/2-1; d2 = p/2;    \\
+    \pend   \\
+    xx = [ x(d1:-1:1); x; x(end:-1:end-d2+1) ]; \\
+    y = conv(xx,h); \\
+    y = y( (2*d1+1):(2*d1+n) );
+}
+
+
+
+\tip{Generate a signal whose regularity is $\mathcal{C}^\alpha$ (Sobolev).}
+{
+    alpha = 2; n = 100;       \\
+    y = randn(n,1);   \comment{gaussian noise}    \\
+    fy = fft(y);       \\
+    fy = fftshift(fy);       \\
+    \comment{filter the noise with |omega|\hatverb{}{-alpha} }      \\
+    h = (-n/2+1):(n/2);       \\
+    h = (abs(h)+1).\hatverb{}(-alpha-0.5);       \\
+    fy = fy.*h';       \\
+    fy = fftshift(fy);       \\
+    y = real( ifft(fy) );       \\
+    y = (y-min(y))/(max(y)-min(y));       \\
+}
+
+\tip{Generate a signal whose regularity is nearly $\mathcal{C}^{\alpha-1/2}$.}
+{
+    alpha = 3; n = 300;       \\
+    x = rand(n,1); \comment{uniform noise}      \\
+    \pfor i=1:alpha  \comment{integrate the noise alpha times}     \\
+    \q    x = cumsum(x - mean(x));       \\
+    \pend       \\
+}
+
+
+\tip{Compute the PSNR between to signals \t{x} and \t{y}.}
+{
+    d = mean( (x(:)-y(:)).\hatverb{}2 );   \\
+    m = max( max(x(:)),max(y(:)) ); \\
+    PSNR = 10*log10( m/d );
+}
+
+\tip{Evaluate a cubic spline at value \t{t} (can be a vector).}
+{
+    x = abs(t) ;    \\
+    I12 = (x>1)\&(x<=2); I01 = (x<=1);   \\
+    y = I01.*( 2/3-x.\hatverb{}2.*(1-x/2) ) + I12.*( 1/6*(2-x).\hatverb{}3 );
+}
+
+\tip{Perform spectral interpolation of a signal \t{x} (aka Fourier zero-padding).
+    The original size is \t{n} and the final size is \t{p}}
+{
+    n = length(x); n0 = (n-1)/2; \\
+    f = fft(x); \comment{forward transform}\\
+    f = p/n*[f(1:n0+1); zeros(p-n,1); f(n0+2:n)];   \\
+    x = real( ifft(f) );  \comment{backward transform}  \\
+}
+
+\tip{Compute the approximation error \t{err}$=|| f-f_M ||/||f||$ obtained
+    when keeping the $M$ best coefficients in an orthogonal basis.}
+{
+    \comment{as an example we take the decomposition in the cosine basis}   \\
+    M = 500;    \\
+    x = peaks(128); y = dct(x); \comment{a sample function} \\
+    {[tmp,I]} = sort(abs(y(:)));  \\
+    y(I(1:end-M)) = 0;  \\
+    err = norm(y,'fro')/norm(x,'fro');  \comment{the relative error}    \\
+    xx = idct(y); imagesc(xx);  \comment{the reconstructed function}
+}
+
+\tip{Evaluate the number of bits needed to code a vector \t{v} with arithmetic coding.}
+{
+    h = hist(v,100);    \comment{use 100 bins for histogram} \\
+    \comment{use Shannon's upper bound} \\
+    nbr\_bits = - length(v(:)) * sum( h.*log2(h) );
+}
+
+\tip{Perform the histogram equalization of a vector \t{x} so that it matches the histogram
+of another vector \t{y}. }
+{
+	{[vx,Ix]} = sort(x); [vy,Iy] = sort(y); \\
+	nx = length(x); ny = length(y); \\
+	ax = linspace(1,ny,nx); ay = 1:ny; \\
+	vx = interp1(ay,vy,ax); \\
+	x(Ix) = vx; 
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Image Processing Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Image Processing Tips}
+
+\tip{Display the result of an FFT with the 0 frequency in the middle.}
+{
+    x = peaks(256); \\
+    imagesc( real( fftshift( fft2(x) ) ) );
+}
+
+\tip{Resize an image \t{M} (new size is \t{(p1,q1)}).}
+{
+    [p,q] = size(M); \comment{the original image}\\
+    {[X,Y]} = meshgrid( (0:p-1)/(p-1), (0:q-1)/(q-1) ); \\
+    \comment{ new sampling location } \\
+    {[XI,YI]} = meshgrid( (0:p1-1)/(p1-1) , (0:q1-1)/(q1-1) ); \\
+    M1 = interp2( X,Y, M, XI,YI ,'cubic');  \comment{ the new image } \\
+}
+
+\tip{Build a 2D gaussian filter of variance \t{s}.}
+{
+    x = -1/2:1/(n-1):1/2;   \\
+    {[Y,X]} = meshgrid(x,x);  \\
+    f = exp( -(X.\hatverb{}2+Y.\hatverb{}2)/(2*s\hatverb{}2) );    \\
+    f = f / sum(f(:));
+}
+
+\tip{Image convolution with centered filter}
+{
+    n = length(x); p = length(h);   \\
+    \pif mod(p,2)==1    \\
+    \q    d1 = (p-1)/2; d2 = (p-1)/2;   \\
+    \pelse  \\
+    \q d1 = p/2-1; d2 = p/2;    \\
+    \pend   \\
+    xx = [ x(d1:-1:1,:); x; x(end:-1:end-d2+1,:) ]; \\
+    xx = [ xx(:,d1:-1:1), xx, xx(:,end:-1:end-d2+1) ];  \\
+    y = conv2(xx,h);    \\
+    y = y( (2*d1+1):(2*d1+n), (2*d1+1):(2*d1+n) );  \\
+}
+
+\tip{Extract all 0th level curves from an image \t{M} an put these curves
+  into a cell array \t{c\_list}.}
+{
+    c = contourc(M,[0,0]);       \\
+    k = 0; p = 1;       \\
+    \pwhile p < size(c, 2) \comment{parse the result}      \\
+    \q    lc = c(2,p);   \comment{ length of the curve }      \\
+    \q    cc = c(:,(p+1):(p+lc));       \\
+    \q    p = p+lc+1;       \\
+    \q    k = k+1;       \\
+    \q    c\_list\{k\} = cc;       \\
+    \pend       \\
+}
+
+\tip{Quick computation of the integral \t{y} of an image \t{M} along
+  a 2D curve \t{c} (the curve is assumed in $[0,1]^2$)}
+{
+    cs = c*(n-1) + 1;   \comment{ scale to [1,n] }      \\
+    I = round(cs); \\
+    J = sub2ind(size(M), I(1,:),I(2,:) ); \\
+    y = sum(M(J));
+}
+\tip{Draw the image of a disk and a square.}
+{
+  n = 100; x = -1:2/(n-1):1;       \\
+  {[Y,X]} = meshgrid(x,x);       \\
+  c = [0,0]; r = 0.4;  \comment{ center and radius of the disk }      \\
+  D = (X-c(1)).\hatverb{}2 + (Y-c(2)).\hatverb{}2 < r\hatverb{}2; \\
+  imagesc(D);       \comment{a disk} \\
+  C = max(abs(X-c(1)),abs(Y-c(2)))<r; \\
+  imagesc(C);       \comment{a square}\\
+}
+\tip{Draw a 2D function whose value \t{z} is known only at scattered 2D points \t{(x,y)}.}
+{
+  n = 400;       \\
+  x = rand(n,1); y = rand(n,1);       \\
+  \comment{this is an example of surface} \\
+  z = cos(pi*x) .* cos(pi*y);       \\
+  tri = delaunay(x,y);  \comment{build a Delaunay triangulation }      \\
+  trisurf(tri,x,y,z);       \\
+}
+\tip{Generate a noisy cloud-like image $M$ whose Fourier spectrum amplitude is $\widehat{M}(\omega)=\omega^{-\alpha}$.}
+{
+    x = -n/2:n/2-1; \\
+    {[Y,X]} = meshgrid(x,x); \\
+    d = sqrt(X.\hatverb{}2 + Y.\hatverb{}2) + 0.1; \\
+    f = rand(n)*2*pi; \\
+    M = (d.\hatverb{}(-alpha)) .* exp(f*1i); \\
+    M = real( ifft2( ifftshift(M) ) );
+}
+
+\tip{Perform a JPEG-like transform of an image \t{x} (replace \t{dct} by \t{idct} to compute
+    the inverse transform).}
+{
+    bs = 8; \comment{size of the blocks}    \\
+    n = size(x,1);  y = zeros(n,n);         \\
+    nb = n/bs;  \comment{n must be a multiple of bs}    \\
+    \pfor i=1:nb    \\
+    \pfor j=1:nb    \\
+    \q    xsel = ((i-1)*bs+1):(i*bs);   \\
+    \q    ysel = ((j-1)*bs+1):(j*bs);   \\
+    \q    y(xsel,ysel) = dct(x(xsel,ysel)); \\
+    \pend   \\
+    \pend
+}
+
+\tip{Extract interactively a part \t{MM} of an image \t{M}.}
+{
+    {[n,p]} = size(M);  \\
+    imagesc(M); \\
+    axis image; axis off;   \\
+    sp = getrect;   \\
+    sp(1) = max(floor(sp(1)),1);    \comment{xmin}  \\
+    sp(2) = max(floor(sp(2)),1);    \comment{ymin}  \\
+    sp(3) = min(ceil(sp(1)+sp(3)),p);    \comment{xmax} \\
+    sp(4) = min(ceil(sp(2)+sp(4)),n);     \comment{ymax}    \\
+    MM = M(sp(2):sp(4), sp(1):sp(3));
+}
+
+\tip{Compute the boundary points of a shape represented as a binary image \t{M}.}
+{
+	M1 = conv2(M,ones(3)/9, 'same'); \\
+	\comment{A indicates with 1 the location of the boundary}
+	A = Mh>0 \& Mh<9 \& M==1; \\
+	I = find(A); \comment{index of the boundary} \\
+	{[x,y]} = ind2sub(size(A),I); \\
+	plot(x,y); \comment{display the boundary}
+}
+
+\tip{Solve the Poisson equation $\Delta G = $div$(f)$ where div$(f)$ is stored in image \t{d} and $G$ in image \t{G}.}
+{
+	\comment{Compute the Laplacian filter in Fourier}
+	{[Y,X]} = meshgrid(0:n-1,0:n-1);\\
+	mu = sin(X*pi/n).\hatverb{}2; mu = -4*( mu+mu' );\\
+	mu(1) = 1; \comment{avoid division by 0}\\
+	\comment{Inverse the Laplacian convolution}\\
+	G = fft2(d) ./ mu; G(1) = 0; \\
+	G = real( ifft2( G ) );
+}
+
+\tip{Extract all the $w \times w$ patches with a spacing \t{q} from an image \t{M}}
+{
+	{[Y,X]} = meshgrid(1:q:n-w, 1:q:n-w); p = size(X,1);\\
+	{[dY,dX]} = meshgrid(0:w-1,0:w-1); \\
+	Xp = repmat( reshape(X,[1,1,p]) ,[w w 1]) + repmat(dX,[1 1 p]);\\
+	Yp = repmat( reshape(Y,[1,1,p]) ,[w w 1]) + repmat(dY,[1 1 p]);\\
+	I = sub2ind([n n], Xp,Yp); \\
+	H = M(I);
+}
+
+
+\tip{Compute the correlation between two images \t{A} and \t{B} of same size}
+{
+	n = size(A,1); sel = [1 n:-1:2];\\
+	C = ifft2( fft2(A).*fft2( B(sel,sel) ) );\\
+    C1 = ifft2( fft2(B).*fft2( A(sel,sel) ) ); \\
+    C = real( (C1+C)/2 );
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Graph Theory Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Graph Theory Tips}
+
+
+\tip{Compute the shortest distance between all pair of nodes
+ (\t{D} is the weighted adjacency matrix).}
+{
+    \comment{non connected vectices must have Inf value} \\
+    N = length(D);       \\
+    \pfor k=1:N       \\
+    \q    D = min(D,repmat(D(:,k),[1 N])+repmat(D(k,:),[N 1]));       \\
+    \pend       \\
+    D1 = D;       \\
+}
+
+\tip{Turn a triangulation into an adjacency matrix.}
+{
+    nvert = max(max(face));       \\
+    nface = length(face);       \\
+    A = zeros(nvert); \\
+    \pfor i=1:nface \\
+    \q    A(face(i,1),face(i,2)) = 1; A(face(i,2),face(i,3)) = 1; \\
+    \q    A(face(i,3),face(i,1)) = 1; \\
+    \q    \comment{ make sure that all edges are symmetric } \\
+    \q    A(face(i,2),face(i,1)) = 1; A(face(i,3),face(i,2)) = 1; \\
+    \q    A(face(i,1),face(i,3)) = 1; \\
+    \pend \\
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Wavelets Tips
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Wavelets and Multiresolution Tips}
+
+\tip{Compute a 2D Haar transform of an image \t{x}}
+{
+    \pif dir==1 \\
+    \q    \pfor j=Jmax:-1:Jmin \\
+    \qq        sel = 1:2\hatverb{}(j+1); \\
+    \qq        x(sel,sel) = fwd\_step(x(sel,sel)); \\
+    \qq        x(sel,sel) = fwd\_step(x(sel,sel)')'; \\
+     \q   \pend \\
+    \q    y = x; \\
+    \pelse \\
+    \q    \pfor j=Jmin:Jmax \\
+    \qq        sel = 1:2\hatverb{}(j+1); \\
+    \qq        x(sel,sel) = bwd\_step(x(sel,sel)')'; \\
+    \qq        x(sel,sel) = bwd\_step(x(sel,sel)); \\
+    \q    \pend \\
+    \q    y = x; \\
+    \pend \\
+    \\
+    \pfunction M1 = fwd\_step(M) \\
+    C = M(1:2:end,:); D = M(2:2:end,:);  \\
+    M1 = [(C+D)/sqrt(2); (C-D)/sqrt(2)]; \\
+    \\
+    \pfunction M1 = bwd\_step(M) \\
+    C = M(1:end/2,:); D = M(end/2+1:end,:);  \\
+    M1 = M; M1(1:2:end,:) = (C+D)/sqrt(2);  \\
+    M1(2:2:end,:) = (C-D)/sqrt(2);  \\
+}
+
+\end{document}

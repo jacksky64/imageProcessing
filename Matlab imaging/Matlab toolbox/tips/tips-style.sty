@@ -1,0 +1,60 @@
+\newenvironment{rs}{\begin{list}{$\bullet$~}{
+ \topsep=0.3ex
+ \itemsep=0.3ex
+ \labelsep=0em
+ \parsep=0em
+ \listparindent=1em
+ \itemindent=0em
+ \settowidth{\labelwidth}{$\bullet$~}
+ \leftmargin=\labelwidth
+}}{\end{list}}
+
+\renewcommand{\ttdefault}{pcr}
+%-------------------------------------------------------
+% programmation operators  -----------------------------
+%-------------------------------------------------------
+\newcommand{\pif}{\textbf{if}\xspace}
+\newcommand{\pfor}{\textbf{for}\xspace}
+\newcommand{\pend}{\textbf{end}\xspace}
+\newcommand{\pfunction}{\textbf{function}\xspace}
+\newcommand{\palias}{\textbf{alias}\xspace}
+\newcommand{\pwith}{\textbf{with}\xspace}
+\newcommand{\pproc}{\textbf{proc}\xspace}
+\newcommand{\plocal}{\textbf{local}\xspace}
+\newcommand{\pfrom}{\textbf{from}\xspace}
+\newcommand{\pto}{\textbf{to}\xspace}
+\newcommand{\pdo}{\textbf{do}\xspace}
+\newcommand{\pwhile}{\textbf{while}\xspace}
+\newcommand{\pthen}{\textbf{then}\xspace}
+\newcommand{\pelse}{\textbf{else}\xspace}
+\newcommand{\pelseif}{\textbf{elseif}\xspace}
+\newcommand{\preturn}{\textbf{return}\xspace}
+\newcommand{\pin}{\textbf{in}\xspace}
+
+\newcommand{\hatverb}{\^{}} %{\:$\hat{}$\:}
+
+\newcommand{\Matlab}{\textsc{Matlab}\xspace}
+
+% parties symétriques et antisymétriques d'un vecteur, d'une fonction
+\newcommand{\psym}[1]{\ensuremath{#1_{s}}}
+\newcommand{\pasym}[1]{\ensuremath{#1_{a}}}
+
+\newcommand{\q}{\quad}
+\newcommand{\qq}{\qquad}
+\newcommand{\qqq}{\quad\qquad}
+\newcommand{\comment}[1]{\textit{\% #1}}
+
+\renewcommand{\t}{\texttt}
+
+\newcommand{\tip}[2]{%
+\vspace{3mm} 
+% \hbox{
+\noindent #1 \vspace{2mm}\\
+\noindent%
+\texttt{\small %
+\begin{tabular}{@{\qq} l} %
+ #2
+\end{tabular} %
+}
+% }
+}
