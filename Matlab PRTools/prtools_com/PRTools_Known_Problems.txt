@@ -1,0 +1,42 @@
+Known problems with PRTools
+---------------------------
+
+1. Dataset class and command
+----------------------------
+
+An important class in PRTools is 'dataset'. There is a dataset
+constructor and there are many overloads. In the recent versions
+of Matlab there is another constructor named 'dataset':
+./matlab-7.7/toolbox/shared/statslib/@dataset/dataset.m 
+
+This causes clashes with PRTools. The only solutions found sofar
+are to remove matlab-7.7/toolbox/shared/statslib from the Matlab
+path or move PRTools to the top of the path.
+
+
+2. Another routine 'map'?
+-------------------------
+All prtools mappings can be written as A*W, overloading the mtimes 
+operator. PRTools starts the execution by its 'map' function: map(A,W).
+There are other packages, like Spider, that contain a function called 
+'map'. The solution is similar as above: change the path such that 
+prtools is above the package, or to delete the package entirely. 
+See also
+
+http://prsysdesign.net/index.php/forums/viewthread/58/
+
+3. Wrong or missing mex-files for qld
+-------------------------------------
+PRTools uses a quadratic optimizer called 'qld'. If it cannot be found
+it uses the Matlab function 'quadprog'. Due to changing libraries
+caused by system upgrades qld mex-file may crash. Solutions are to
+rename it or to delete it, in which case PRTools uses 'quadprog', or
+to recompile the source. To do this, change directory to 
+prtools/private and run makeqld.
+
+4. Problems with examples
+-------------------------
+Some examples prex* don't run due to missing datafiles or datasets.
+They may be downloaded from the prtools website:
+http://prtools.org/files/prdatafiles.zip
+http://prtools.org/files/prdatasets.zip

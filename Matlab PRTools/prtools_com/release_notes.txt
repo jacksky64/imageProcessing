@@ -1,0 +1,133 @@
+PRTools 4.1.6 release notes - Sep 2009
+
+The various subreleases are not essentially different. Many minor
+changes are made, many in the error handling and error messages.
+Previous changes in allowing empty feature labels and unset
+feature sizes (needed for datafiles as their objects may have
+different sizes) ripple further and need more changes on unforeseen
+places. In order to make more clear to users which version they
+are using we now (Sep 2009) increased the version number.
+Note that in the Contents.m always the release data is mentioned.
+
+PRTools 4.1 release notes
+
+This is section supplies some  information about changes in 
+PRTools4.1 with respect to PRTools4.0 A number of new 
+possibilities has been created important for the handling of 
+large datasets, multiple labels of objects, the optimisation of 
+complexity and regularisation parameters and the handling of 
+regression problems. 
+
+1 Compatibility
+
+Changes are generally upwards compatible. With a few exceptions 
+old routines should still work. The main exception is that the 
+undocumented feature of PRTools4.0 to obtain fields from dataset 
+and mapping variables using the dot-construct (e.g. classnames = 
+a.lablist) has been changed. From now on the official and 
+guaranteed way to address fields is by using the get-commands 
+(e.g. classnames = getlablist(a)). The reason is that for a number 
+of fields subfields have been defined using structures, structure 
+arrays and cell arrays. So users are  urged to use the get-and 
+set-commands as also in future releases the constructions may 
+change. PRTools still recognizes datasets contructed in the old 
+way and automatically converts them.
+
+2 Datafiles
+
+A new object class, datafile, has been created. The datafile class 
+inherits most of the fields and methods of the dataset class, but 
+extends them by allowing data that is not in core but stored in 
+files on disk. As these may be large, handling of datafiles is 
+restricted to administration, like desired sampling of objects 
+and features and preprocessing (e.g. filtering and resizing of 
+images). At some moment a datafile has to be converted into a 
+dataset and it should fit then in the available memory. Datafiles 
+are important to the extend PRTools possibilities with 
+preprocessing and feature measurements within the same 
+framework. Thereby classifiers may be designed and trained that 
+can directly operate on raw images or other signals without the 
+need to convert them first to datasets. For more information read  
+datafiles help file.
+
+3 Image processing routines
+
+In relation with the above a large set of image processing 
+routines operating on datafiles and datasets has been included. 
+They are helpful to convert (sets of) images to features and 
+datasets. A number of them assume that the dip_image toolbox is 
+available.
+
+4 Multiple labels
+
+For some applications it is useful to have multiple labelings of 
+the objects. For instance, pixels may be labeled according to the 
+image region (grass, water, rock) as will as to the image 
+category (mountains, seaside, city) as well as to some origin 
+(France, England, Norway). A provision has been created to enable 
+this. The various labelings and corresponding priors (and targets 
+in case of soft labeling) are stored in the dataset, but just one 
+of them is active and is accessed by getlablist, getlabels, 
+getprior and getnlab. For more information read he multi_labeling 
+help file.
+
+5 Optimisation of complexity parameters and regularisation
+
+Many trainable classifiers and mappings depend on some parameter 
+controlling its complexity or regularisation. A general routine 
+has been created to optimise such parameters by cross-validation. 
+This is always done in a standard way: 20 steps of 5-fold cross-
+validation. This increases the training time roughly by a factor 
+100. The automatic optimisation is activated (for the routines 
+for which it is implemented) by using a NaN in the function call. 
+So w=ldc(a) uses no regularisation, w=ldc(a,1e-6) uses a user 
+defined value of 1e-6 and w=ldc(a,NaN) activates the automatic 
+optimisation. The actually  used parameter value may be retrieved 
+afterwards by the routine getopt_pars. 
+
+6 Regression
+
+PRTools has already for a long time the possibility of datasets 
+consisting of feature based vectors with one or more desired 
+target values (the have the label type 'targets' instead of 
+'crisp' or 'soft'). Now a set of routines has been added to make 
+use of this option, e.g. linearr for linear regression, svmr for 
+support vector machine regression and testr of evalution.
+
+7 Object and dataset annotation
+
+Datasets and objects inside datasets have fields to annotate them 
+('user' and 'ident'). They are now  structures and the routines 
+for setting (setuser and setident) and reading (getuser and 
+getident) can handle them. 
+
+8 Kernels
+
+A general routine has been added for defining kernels: kernelm. 
+This routine may be used in the support vector classifiers svc 
+and nusvc as well as in the general kernel based classifier 
+kernelc.
+
+9 Support vector classifiers
+
+The call of the general support vector classifier svc has been 
+upgraded such that it included a recognizable kernel definition. 
+In addition two other support vector classifiers are added, nusvc 
+for using a regularisation parameter based on the expected error 
+and rbsvc, which is parameter free as it estimates automatically 
+the optimal radial basis kernel and the regularisation parameter.
+
+10 Rejects
+
+Routines rejectc and rejectm have been added to facilitate the 
+construction of rejecting classifiers. They add class labels on 
+the output that are NaN or '' (empty string), the PRTools standard 
+label for unlabeled objects.
+
+11 Examples
+
+PRTools comes with a set of examples: prex_*. Some of them will
+only run if the desired datasets and datafiles are available.
+They can be downloaded by
+http://prtools.org/files/prdatafiles.zip
+http://prtools.org/files/prdatasets.zip
