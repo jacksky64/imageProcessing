@@ -30,7 +30,7 @@ function varargout = vi_isoline(varargin)
 
 % Edit the above text to modify the response to help vi_isoline
 
-% Last Modified by GUIDE v2.5 19-Aug-2014 09:00:21
+% Last Modified by GUIDE v2.5 25-Aug-2014 11:57:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -77,12 +77,6 @@ data(:, 2) = {false};
 set(handles.uitable_isovalues, 'Data', data);
 
 set(hObject, 'Visible', 'off');
-
-
-% -------------------------------------------------------------------
-function TF = is_handle(h)
-
-TF = ~isempty(h) && 1 == numel(h) && isa(h, 'double') && ishandle(h);
 
 
 % -------------------------------------------------------------------
@@ -154,36 +148,6 @@ set(handles.uitable_isovalues, 'Data', data);
 send_isovalues_to_main_gui(handles);
 
 
-% --- Executes on button press in togglebutton_showAll.
-function togglebutton_showAll_Callback(hObject, eventdata, handles)
-% hObject    handle to togglebutton_showAll (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of togglebutton_showAll
-
-data = get(handles.uitable_isovalues, 'Data');
-numVals = length([data{:, 1}]);
-data(1:numVals, 2) = {true};
-set(handles.uitable_isovalues, 'Data', data);
-send_isovalues_to_main_gui(handles);
-
-
-% --- Executes on button press in togglebutton_hideAll.
-function togglebutton_hideAll_Callback(hObject, eventdata, handles)
-% hObject    handle to togglebutton_hideAll (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of togglebutton_hideAll
-
-data = get(handles.uitable_isovalues, 'Data');
-numVals = length([data{:, 1}]);
-data(1:numVals, 2) = {false};
-set(handles.uitable_isovalues, 'Data', data);
-send_isovalues_to_main_gui(handles);
-
-
 % --- Executes when user attempts to close figure_isoline.
 function figure_isoline_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure_isoline (see GCBO)
@@ -210,3 +174,30 @@ function checkbox_clabel_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of checkbox_clabel
 
 send_isovalues_to_main_gui(handles);
+
+
+% --- Executes on button press in pushbutton_showAll.
+function pushbutton_showAll_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_showAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+data = get(handles.uitable_isovalues, 'Data');
+numVals = length([data{:, 1}]);
+data(1:numVals, 2) = {true};
+set(handles.uitable_isovalues, 'Data', data);
+send_isovalues_to_main_gui(handles);
+
+
+% --- Executes on button press in pushbutton_hideAll.
+function pushbutton_hideAll_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_hideAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+data = get(handles.uitable_isovalues, 'Data');
+numVals = length([data{:, 1}]);
+data(1:numVals, 2) = {false};
+set(handles.uitable_isovalues, 'Data', data);
+send_isovalues_to_main_gui(handles);
+

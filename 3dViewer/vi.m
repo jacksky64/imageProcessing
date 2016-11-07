@@ -174,7 +174,7 @@ if ~argCheckMap('aspect')
 end
 
 setappdata(handles.figure_vi, 'buttonDown', false);
-setappdata(handles.figure_vi, 'buttonDownPos', [1 1]);
+setappdata(handles.figure_vi, 'ptOnAxesBtnDown', [1 1]);
 
 setappdata(handles.figure_vi, 'regionType', 'Rectangle');
 
@@ -204,12 +204,6 @@ for i = 1 : length(guiChildren)
 end
 
 setappdata(hFig, 'uiMenus', uiMenus);
-
-
-% -------------------------------------------------------------------
-function TF = is_handle(h)
-
-TF = ~isempty(h) && 1 == numel(h) && isa(h, 'double') && ishandle(h);
 
 
 % -------------------------------------------------------------------
@@ -750,26 +744,28 @@ end
 
 
 % -------------------------------------------------------------------
-function [cp, onImage] = get_pointer_pos(handles)
+function [ptOnAxesCurrent, onImage] = get_pointer_pos(handles)
 
 if 4 == get_view_type(handles)
+    imgSize = getappdata(handles.figure_vi, 'imgSize');
+    ptOnAxesCurrent = round(get(handles.axes_3dSlicer, 'CurrentPoint'));
     
-    pos = get(handles.axes_3dSlicer, 'Position');
+    onImage = all(ptOnAxesCurrent(:) >= 1) ...
+        && ptOnAxesCurrent(1, 1) <= imgSize(2) ...
+        && ptOnAxesCurrent(1, 2) <= imgSize(1) ...
+        && ptOnAxesCurrent(1, 3) <= imgSize(3) ...
+        && ptOnAxesCurrent(2, 1) <= imgSize(2) ...
+        && ptOnAxesCurrent(2, 2) <= imgSize(1) ...
+        && ptOnAxesCurrent(2, 3) <= imgSize(3);
     
-    cp = get(handles.figure_vi, 'CurrentPoint');
-    cp = round(cp(1, 1:2));
-    
-    onImage = cp(1) >= pos(1) && cp(1) <= pos(1)+pos(3)-1 && cp(2) >= pos(2) && cp(2) <= pos(2)+pos(4)-1;
-
 else
-    
     sliceSize = getappdata(handles.figure_vi, 'sliceSize');
+    ptOnAxesCurrent = get(handles.axes_2dViewer, 'CurrentPoint');
+    ptOnAxesCurrent = round(ptOnAxesCurrent(1, 1:2));
+    ptOnAxesCurrent(2) = sliceSize(1) - ptOnAxesCurrent(2) + 1;
     
-    cp = get(handles.axes_2dViewer, 'CurrentPoint');
-    cp = round(cp(1, 1:2));
-    cp(2) = sliceSize(1) - cp(2) + 1;
-    
-    onImage = cp(1) >= 1 && cp(1) <= sliceSize(2) && cp(2) >= 1 && cp(2) <= sliceSize(1);
+    onImage = ptOnAxesCurrent(1) >= 1 && ptOnAxesCurrent(1) <= sliceSize(2) ...
+        && ptOnAxesCurrent(2) >= 1 && ptOnAxesCurrent(2) <= sliceSize(1);
     
 end
 
@@ -1134,6 +1130,63 @@ if is_handle(hFigLineMeasurement)
 end
 
 
+% -------------------------------------------------------------------
+function [pt, nPlane] = pick_3d_point(handles)
+
+assert(4 == get_view_type(handles));
+
+ptOnAxesCurrent = round(get(handles.axes_3dSlicer, 'CurrentPoint'));
+
+hSlices = getappdata(handles.figure_vi, 'hSlices');
+xdata = get(hSlices(1), 'XData');
+ydata = get(hSlices(2), 'YData');
+zdata = get(hSlices(3), 'ZData');
+
+ptPos = zeros(3, 3);
+
+ptPos(1, 1) = xdata(1);
+ptPos(1, 2) = interp1nosort(ptOnAxesCurrent(:, 1), ptOnAxesCurrent(:, 2), xdata(1));
+ptPos(1, 3) = interp1nosort(ptOnAxesCurrent(:, 1), ptOnAxesCurrent(:, 3), xdata(1));
+
+ptPos(2, 1) = interp1nosort(ptOnAxesCurrent(:, 2), ptOnAxesCurrent(:, 1), ydata(1));
+ptPos(2, 2) = ydata(1);
+ptPos(2, 3) = interp1nosort(ptOnAxesCurrent(:, 2), ptOnAxesCurrent(:, 3), ydata(1));
+
+ptPos(3, 1) = interp1nosort(ptOnAxesCurrent(:, 3), ptOnAxesCurrent(:, 1), zdata(1));
+ptPos(3, 2) = interp1nosort(ptOnAxesCurrent(:, 3), ptOnAxesCurrent(:, 2), zdata(1));
+ptPos(3, 3) = zdata(1);
+
+ptPos = round(ptPos);
+
+d2 = zeros(3, 1);
+
+if any(isnan(ptPos(1, :)))
+    d2(1) = inf;
+else
+    d2(1) = sum((ptOnAxesCurrent(1, :) - ptPos(1, :)) .^ 2);
+end
+
+if any(isnan(ptPos(2, :)))
+    d2(2) = inf;
+else
+    d2(2) = sum((ptOnAxesCurrent(1, :) - ptPos(2, :)) .^ 2);
+end
+
+if any(isnan(ptPos(3, :)))
+    d2(3) = inf;
+else
+    d2(3) = sum((ptOnAxesCurrent(1, :) - ptPos(3, :)) .^ 2);
+end
+
+if ~all(isinf(d2))
+    [~, nPlane] = min(d2);
+    pt = ptPos(nPlane, :);
+else
+    nPlane = 0;
+    pt = [];
+end
+
+
 % --- Outputs from this function are returned to the command line.
 function varargout = vi_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -1151,73 +1204,124 @@ function figure_vi_WindowButtonMotionFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[cp, onImage] = get_pointer_pos(handles);
+[ptOnAxesCurrent, onImage] = get_pointer_pos(handles);
 
-is2d = ismember(get_view_type(handles), [1 2 3]);
+is2d = 4 ~= get_view_type(handles);
 
 cursorType = get(handles.figure_vi, 'Pointer');
 
-if onImage && ~strcmpi(cursorType, 'cross') && is2d
+if is2d && onImage && ~strcmpi(cursorType, 'cross')
     set(handles.figure_vi, 'Pointer', 'crosshair');
 elseif ~onImage && ~strcmpi(cursorType, 'arrow')
     set(handles.figure_vi, 'Pointer', 'arrow');
 end
 
 if ~onImage
+    set(handles.text_pixelInfo, 'String', '');
+    set(handles.text_voxelInfo, 'String', '');
     return;
 end
 
+buttonDown = getappdata(handles.figure_vi, 'buttonDown');
+selectionType = get(handles.figure_vi, 'SelectionType');
+leftButtonDown = buttonDown && strcmpi(selectionType, 'normal');
+rightButtonDown = buttonDown && strcmpi(selectionType, 'alt');
+
+ptOnAxesBtnDown = getappdata(handles.figure_vi, 'ptOnAxesBtnDown');
+
+dataFormat = getappdata(handles.figure_vi, 'dataFormat');
+
 if is2d
     sliceImage = getappdata(handles.figure_vi, 'sliceImage');
-    dataFormat = getappdata(handles.figure_vi, 'dataFormat');
     set(handles.text_pixelInfo, 'String', ...
-        ['(' num2str(round(cp(1))) ', ' num2str(round(cp(2))) ')  '...
-        num2str(sliceImage(cp(2), cp(1)), dataFormat)]);
+        ['(' num2str(round(ptOnAxesCurrent(1))) ', ' num2str(round(ptOnAxesCurrent(2))) ')  '...
+        num2str(sliceImage(ptOnAxesCurrent(2), ptOnAxesCurrent(1)), dataFormat)]);
+
 else
-    if getappdata(handles.figure_vi, 'rotating')
-        hLight = getappdata(handles.figure_vi, 'hLight');
-        set(hLight, 'Position', get(handles.axes_3dSlicer, 'CameraPosition'));
+    [pt, nPlane] = pick_3d_point(handles);
+    
+    if 0 == nPlane
+        set(handles.text_voxelInfo, 'String', '');
+        
+    else
+        hSlices = getappdata(handles.figure_vi, 'hSlices');
+        sliceImage = get(hSlices(nPlane), 'CData');
+        if 1 == nPlane
+            v = sliceImage(pt(2), pt(3));
+        elseif 2 == nPlane
+            v = sliceImage(pt(1), pt(3));
+        elseif 3 == nPlane
+            v = sliceImage(pt(2), pt(1));
+        end
+        set(handles.text_voxelInfo, 'String', ...
+            ['(' num2str(pt(1)) ', ' num2str(pt(2)) ', ' num2str(pt(3)) ')  '...
+            num2str(v, dataFormat)]);
+       
     end
+    
 end
 
-selectionType = get(handles.figure_vi, 'SelectionType');
-buttonDown = getappdata(handles.figure_vi, 'buttonDown');
-leftButtonDown = buttonDown && strcmpi(selectionType, 'normal');
+ptOnFigCurrent = get(handles.figure_vi, 'CurrentPoint');
 
-buttonDownPos = getappdata(handles.figure_vi, 'buttonDownPos');
-buttonShift = cp - buttonDownPos;
+if buttonDown
+    ptOnFigBtnDown = getappdata(handles.figure_vi, 'ptOnFigBtnDown');
+    ptShift = ptOnFigCurrent - ptOnFigBtnDown;
+end
 
 measuringLine = 1 == get(handles.togglebutton_lineMeasure, 'Value');
 measuringRegion = 1 == get(handles.togglebutton_regionMeasure, 'Value');
 
 if leftButtonDown && ~measuringLine && ~measuringRegion % Change window.
+    % Move mouse down to INCREASE level to DECREASE the brightness.
+    % Move mouse left and right to change width.
     referenceCLim = getappdata(handles.figure_vi, 'referenceCLim');
     windowLevel = mean(referenceCLim);
     windowWidth = range(referenceCLim);
-    windowLevel = windowLevel - windowWidth * buttonShift(2) / 1000;
-    % Move mouse down to INCREASE level to DECREASE the brightness.
-    windowWidth = max(eps('single'), windowWidth + windowWidth * buttonShift(1) / 500);
-    % Move mouse left and right to change width.
+    windowLevel = windowLevel - windowWidth * ptShift(2) / 1000;
+    windowWidth = max(eps('single'), windowWidth + windowWidth * ptShift(1) / 500);
     windowMax = windowLevel + windowWidth / 2;
     windowMin = windowLevel - windowWidth / 2;
-    
     set_clims(handles, windowMin, windowMax);
-    
     update_window_info(handles);
+    
 elseif is2d && leftButtonDown && measuringLine && ~measuringRegion % Line measurement.
-    setappdata(handles.figure_vi, 'posLine', [buttonDownPos(1), cp(1), buttonDownPos(2), cp(2)]);
+    setappdata(handles.figure_vi, 'posLine', ...
+        [ptOnAxesBtnDown(1), ptOnAxesCurrent(1), ptOnAxesBtnDown(2), ptOnAxesCurrent(2)]);
     update_line_data(handles);
+    
 elseif is2d && leftButtonDown && ~measuringLine && measuringRegion % Region measurement.
     if strcmpi('Drawn', getappdata(handles.figure_vi, 'regionType'))
         userDrawRegionVertices = getappdata(handles.figure_vi, 'userDrawRegionVertices');
         assert(~isempty(userDrawRegionVertices));
-        userDrawRegionVertices = [userDrawRegionVertices; cp];
+        userDrawRegionVertices = [userDrawRegionVertices; ptOnAxesCurrent];
         setappdata(handles.figure_vi, 'userDrawRegionVertices', userDrawRegionVertices);
         update_user_drawn_region_data(handles);
     else
-        setappdata(handles.figure_vi, 'posRegion', [buttonDownPos(1), cp(1), buttonDownPos(2), cp(2)]);
+        setappdata(handles.figure_vi, ...
+            'posRegion', [ptOnAxesBtnDown(1), ptOnAxesCurrent(1), ptOnAxesBtnDown(2), ptOnAxesCurrent(2)]);
         update_region_data(handles);
     end
+    
+elseif ~is2d && 1 == get(handles.togglebutton_rotate, 'Value')
+    hLight = getappdata(handles.figure_vi, 'hLight');
+    set(hLight, 'Position', get(handles.axes_3dSlicer, 'CameraPosition'));
+    
+elseif ~is2d && rightButtonDown
+    referenceNPlane = getappdata(handles.figure_vi, 'referenceNPlane');
+    referenceSliceNo3d = getappdata(handles.figure_vi, 'referenceSliceNo3d');
+    
+    if referenceNPlane == 1
+        update_slice_3d(handles, referenceSliceNo3d(1) + ptShift(2), referenceSliceNo3d(2), referenceSliceNo3d(3), false);
+        
+    elseif referenceNPlane == 2
+        update_slice_3d(handles, referenceSliceNo3d(1), referenceSliceNo3d(2) + ptShift(2), referenceSliceNo3d(3), false);
+        
+    elseif referenceNPlane == 3
+        update_slice_3d(handles, referenceSliceNo3d(1), referenceSliceNo3d(2), referenceSliceNo3d(3) + ptShift(2), false);
+        
+    else
+    end
+    
 end
 
 
@@ -1454,14 +1558,14 @@ function figure_vi_WindowButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 setappdata(handles.figure_vi, 'buttonDown', true);
+setappdata(handles.figure_vi, 'ptOnFigBtnDown', get(handles.figure_vi, 'CurrentPoint'));
 
-[cp, onImage] = get_pointer_pos(handles);
-
+[ptOnAxesCurrent, onImage] = get_pointer_pos(handles);
 if ~onImage
     return;
 end
 
-setappdata(handles.figure_vi, 'buttonDownPos', cp);
+setappdata(handles.figure_vi, 'ptOnAxesBtnDown', ptOnAxesCurrent);
 
 selectionType = get(handles.figure_vi, 'SelectionType');
 
@@ -1495,8 +1599,17 @@ if strcmpi(selectionType, 'normal')
     
     if strcmpi('Drawn', getappdata(handles.figure_vi, 'regionType')) ...
             && 1 == get(handles.togglebutton_regionMeasure, 'Value')
-        setappdata(handles.figure_vi, 'userDrawRegionVertices', cp);
+        setappdata(handles.figure_vi, 'userDrawRegionVertices', ptOnAxesCurrent);
     end
+    
+elseif strcmpi(selectionType, 'alt')
+    [~, nPlane] = pick_3d_point(handles);
+    
+    setappdata(handles.figure_vi, 'referenceNPlane', nPlane);
+    
+    sliceNo3d = getappdata(handles.figure_vi, 'sliceNo3d');
+    setappdata(handles.figure_vi, 'referenceSliceNo3d', sliceNo3d);
+    
 end
 
 

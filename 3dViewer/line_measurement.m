@@ -125,12 +125,6 @@ update_measurement(handles);
 
 
 % -------------------------------------------------------------------
-function TF = is_handle(h)
-
-TF = ~isempty(h) && 1 == numel(h) && isa(h, 'double') && ishandle(h);
-
-
-% -------------------------------------------------------------------
 function parse_line_data(handles, lineData)
 
 % lineData: Each row is 1 point. First number is value.

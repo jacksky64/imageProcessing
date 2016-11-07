@@ -96,12 +96,6 @@ update_stats(handles);
 
 
 % -------------------------------------------------------------------
-function TF = is_handle(h)
-
-TF = ~isempty(h) && 1 == numel(h) && isa(h, 'double') && ishandle(h);
-
-
-% -------------------------------------------------------------------
 function parse_image_data(handles, imageData)
 
 assert((isnumeric(imageData) || islogical(imageData)) && ismatrix(imageData), ...

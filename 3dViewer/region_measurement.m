@@ -130,12 +130,6 @@ update_measurement(handles);
 
 
 % -------------------------------------------------------------------
-function TF = is_handle(h)
-
-TF = ~isempty(h) && 1 == numel(h) && isa(h, 'double') && ishandle(h);
-
-
-% -------------------------------------------------------------------
 function parse_region_data(handles, regionData)
 
 regionType = getappdata(handles.figure_rs, 'regionType');
