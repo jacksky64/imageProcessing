@@ -1,3 +1,5 @@
+GKDEB  Gaussian Kernel Density Estimation with Bounded Support
+
 Copyright (c) 2010, Yi Cao
 All rights reserved.
 
