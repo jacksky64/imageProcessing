@@ -107,9 +107,6 @@ if ndims(movingImage) ~= ndims(fixedImage)
     return
 end
 
-if nargin<4 || isempty(fixedMask)
-    fixedMask=uint16(ones(size(fixedImage)));
-end
 
 % Make directory into which we will write the image files and associated registration files
 if nargin<4 || isempty(outputDir) 
@@ -218,8 +215,8 @@ elseif ischar(paramFile) & strfind(paramFile,'.yml') & isempty(paramstruct) %rea
 
 elseif (ischar(paramFile) & strfind(paramFile,'.txt')) %we have an elastix parameter file
     if ~strcmp(outputDir,'.')
-        copyfile(paramFname,outputDir)
-        paramFname{1} = fullfile(outputDir,paramFname);
+        copyfile(paramFile,outputDir)
+        paramFname{1} = fullfile(outputDir,paramFile);
     end
 
 elseif iscell(paramFile) %we have a cell array of elastix parameter files
@@ -265,13 +262,13 @@ end
 
 %Build the the appropriate command
 if exist('fixedMaskFname','var')
-    CMD=sprintf('elastix -f %s.mhd -m %s.mhd -fMask %s.mhd -out %s ',...
+    CMD=sprintf('elastix -f "%s.mhd" -m "%s.mhd" -fMask "%s.mhd" -out "%s" ',...
         fullfile(outputDir,targetFname),...
         fullfile(outputDir,movingFname),...
         fullfile(outputDir,fixedMaskFname),...
         outputDir);
 else
-    CMD=sprintf('elastix -f %s.mhd -m %s.mhd -out %s ',...
+    CMD=sprintf('elastix -f "%s.mhd" -m "%s.mhd" -out "%s" ',...
         fullfile(outputDir,targetFname),...
         fullfile(outputDir,movingFname),...
         outputDir);
@@ -288,7 +285,7 @@ end
     
 %Loop through, adding each parameter file in turn to the string
 for ii=1:length(paramFname) 
-    CMD=[CMD,sprintf('-p %s ', paramFname{ii})];
+    CMD=[CMD,sprintf('-p "%s" ', paramFname{ii})];
 end
 
 %store a copy of the command to the directory
