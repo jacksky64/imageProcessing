@@ -21,7 +21,7 @@ function [Dxx,Dxy,Dyy] = Hessian2D(I,Sigma)
 if nargin < 2, Sigma = 1; end
 
 % Make kernel coordinates
-[X,Y]   = ndgrid(-round(3*Sigma):round(3*Sigma));
+[X,Y]   = ndgrid(-round(5*Sigma):round(5*Sigma));
 
 % Build the gaussian 2nd derivatives filters
 DGaussxx = 1/(2*pi*Sigma^4) * (X.^2/Sigma^2 - 1) .* exp(-(X.^2 + Y.^2)/(2*Sigma^2));
