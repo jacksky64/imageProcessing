@@ -1,0 +1,579 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>PhotonAttenuation</title><meta name="generator" content="MATLAB 8.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-08-25"><meta name="DC.source" content="PhotonAttenuation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Process 'Energy' Input Parameter</a></li><li><a href="#4">Process 'Material' Input Parameter</a></li><li><a href="#5">Process 'Options' Input Parameter</a></li><li><a href="#6">Process 'Thickness' Input Parameter</a></li><li><a href="#7">Initialize output variables</a></li><li><a href="#8">Main Loop: preform calculation for each material</a></li><li><a href="#9">Parse material</a></li><li><a href="#10">Look up the data, average contributions of different elements and save</a></li><li><a href="#11">Lookup density and atomic molar mass if needed</a></li><li><a href="#12">Calculate Transmission if needed</a></li><li><a href="#13">if Energy has a spectrum than integrate</a></li><li><a href="#14">Cast output in a chosen format</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> X = PhotonAttenuation(Material, Energy, Options, Thickness)
+</pre><pre class="codeinput"><span class="comment">% PhotonAttenuation provides photon attenuation in different materials.</span>
+<span class="comment">%</span>
+<span class="comment">% X = PhotonAttenuation(Material, Energy, Options, Thickness)</span>
+<span class="comment">% Function providing the attenuation and energy absorption of x-ray and</span>
+<span class="comment">% gamma-ray photons in various materials including mixtures and compounds,</span>
+<span class="comment">% based on NIST report 5632, by J. Hubbell and S.M. Seltzer.</span>
+<span class="comment">%</span>
+<span class="comment">% Input :</span>
+<span class="comment">% 1) Material - string, number or array of strings, numbers or cells</span>
+<span class="comment">%     describing material type.</span>
+<span class="comment">%     - Element atomic number Z - in 1 to 100 range</span>
+<span class="comment">%     - Element symbols - 'Pb', 'Fe'</span>
+<span class="comment">%     - Element names   - 'Lead', 'Iron', 'Cesium' or 'Caesium'</span>
+<span class="comment">%     - Some common names and full compound names - 'Water', 'Polyethylene'</span>
+<span class="comment">%       (see function PhysProps for more details)</span>
+<span class="comment">%     - Compound formulas - 'H2SO4', 'C3H7NO2'- those are case sensitive</span>
+<span class="comment">%     - Mixtures of any of above with fractions by weight - like</span>
+<span class="comment">%       'H(0.057444)C(0.774589)O(0.167968)' for Bakelite or</span>
+<span class="comment">%       'B(10)H(11)C(58)O(21)' for Borated Polyethylene (BPE-10)</span>
+<span class="comment">% 2) Energy - Energy of the photons. Can be single energy or vector of</span>
+<span class="comment">%       energies. Several formats are allowed:</span>
+<span class="comment">%     - Energy in MeV, should be in [0.001, 20] MeV range.</span>
+<span class="comment">%     - Wavelengths in nano-meters. Encoded as negative numbers. The valid</span>
+<span class="comment">%     range is 6.1982e-5 to 1.2396 nm;</span>
+<span class="comment">%     - Continuous Spectrum - Encoded in 2 columns: column one contains</span>
+<span class="comment">%       energy in MeV and column two contains relative number of photons at that</span>
+<span class="comment">%       energy. Spectrum is assumed to be continuous and output is</span>
+<span class="comment">%       calculated through integration using 'trapz' function.</span>
+<span class="comment">% 3) Options - specifies what to return. String or number:</span>
+<span class="comment">%     1 - 'mac' - function returns Mass Attenuation Coefficients in cm^2/g</span>
+<span class="comment">%     2 - 'meac' - function returns Mass Energy-Absorption Coefficients</span>
+<span class="comment">%           in cm^2/g. See link below for more info:</span>
+<span class="comment">%           http://physics.nist.gov/PhysRefData/XrayMassCoef/chap3.html</span>
+<span class="comment">%     3 - 'cross section' or 'x' - function returns cross section in barns per</span>
+<span class="comment">%          atom (convert to cm^2 per atom by multiplying by 10^-24).</span>
+<span class="comment">%          Available only for elements.</span>
+<span class="comment">%     4 - 'mean free path' or 'mfp' - function returns mean free path (in cm) of</span>
+<span class="comment">%           photon in the given material . Available only for chemicals</span>
+<span class="comment">%           recognized by 'PhysProps' function (since density is needed).</span>
+<span class="comment">%     5 - 'transmission' or 't' - fraction of protons absorbed by given thickness</span>
+<span class="comment">%          of material</span>
+<span class="comment">%     6 - 'ln_T' - log of transmission</span>
+<span class="comment">%     7 - 'lac' - Linear Attenuation Coefficients in 1/cm same as 1/(Cross</span>
+<span class="comment">%          Section) or mac*density.</span>
+<span class="comment">%     8 - 'half value layer' or 'hvl' - function returns half-value layer (in cm) of</span>
+<span class="comment">%           photon in the given material . Available only for chemicals</span>
+<span class="comment">%           recognized by 'CompoundProps' function (since density is needed).</span>
+<span class="comment">%     9 - 'tenth value layer' or 'tvl' - analogous to 'hvl' .</span>
+<span class="comment">% 4) Thickness - Thickness of material in cm. Either scalar or vector of</span>
+<span class="comment">%      the same length as number of materials. Negative numbers indicate</span>
+<span class="comment">%      mass thickness measured in g/cm^2 (density*thickness). Needed only</span>
+<span class="comment">%      if energy spectrum is used or in case of Options set to</span>
+<span class="comment">%      'Transmission'.</span>
+<span class="comment">% Output :</span>
+<span class="comment">%   X  - output depends on 'Options' parameter. Columns always correspond</span>
+<span class="comment">%        to the materials and rows correspond to energy. In case of spectrum</span>
+<span class="comment">%        input only single row is returned.</span>
+<span class="comment">%</span>
+<span class="comment">% History:</span>
+<span class="comment">%   Written by Jarek Tuszynski (SAIC), 2006</span>
+<span class="comment">%   Updated by Jarek Tuszynski (Leidos), 2014, jaroslaw.w.tuszynski@leidos.com</span>
+<span class="comment">%   Inspired by John Schweppe Mathematica code available at</span>
+<span class="comment">%     http://library.wolfram.com/infocenter/MathSource/4267/</span>
+<span class="comment">%   Tables are based on NIST's XAAMDI and XCOM databases. See</span>
+<span class="comment">%     PhotonAttenuationQ function for more details.</span>
+<span class="comment">%</span>
+<span class="comment">% Examples:</span>
+<span class="comment">% %% Plot Cross sections of elements for different energy photons</span>
+<span class="comment">% figure</span>
+<span class="comment">% Z = 1:100; % elements with Z in 1-100 range</span>
+<span class="comment">% E = logspace(log10(0.001), log10(20), 500);  % define energy grid</span>
+<span class="comment">% X = PhotonAttenuation(Z, E, 'cross section');</span>
+<span class="comment">% imagesc(log10(X)); colorbar;</span>
+<span class="comment">% title('Cross sections of elements for different energy photons');</span>
+<span class="comment">% xlabel('Atomic Number of Elements');</span>
+<span class="comment">% ylabel('Photon Energy in MeV');</span>
+<span class="comment">% set(gca,'YTick',linspace(1, length(E), 10));</span>
+<span class="comment">% set(gca,'YTickLabel',1e-3*round(1e3*logspace(log10(0.001), log10(20), 10)))</span>
+<span class="comment">%</span>
+<span class="comment">% %% Plot Photon Attenuation Coefficients, using different input styles</span>
+<span class="comment">% figure</span>
+<span class="comment">% E = logspace(log10(0.001), log10(20), 500);  % define energy grid</span>
+<span class="comment">% Z = {'Concrete', 'Air', 'B(10)H(11)C(58)O(21)', 100, 'Ag'};</span>
+<span class="comment">% mac  = PhotonAttenuation(Z, E, 'mac');</span>
+<span class="comment">% loglog(E, mac);</span>
+<span class="comment">% legend({'Concrete', 'Air', 'BPE-10', 'Fermium', 'Silver'});</span>
+<span class="comment">% ylabel('Attenuation in cm^2/g');</span>
+<span class="comment">% xlabel('Photon Energy in MeV');</span>
+<span class="comment">% title('Photon Attenuation Coefficients for different materials');</span>
+</pre><h2>Process 'Energy' Input Parameter<a name="3"></a></h2><pre class="codeinput">s = size(Energy);
+nEnergy = prod(s);
+Spectrum = [];
+<span class="keyword">if</span> (min(s)==2)
+  <span class="keyword">if</span> (s(1)==2), Energy=Energy'; <span class="keyword">end</span>
+  Spectrum = Energy(:,2);
+  Energy   = Energy(:,1);
+  Spectrum = Spectrum / trapz(Energy, Spectrum); <span class="comment">% normalize spectrum</span>
+  nEnergy  = 1; <span class="comment">% this is a spectrum output will be an array instead of matrix</span>
+<span class="keyword">end</span>
+Energy  = Energy(:);
+<span class="keyword">if</span> (any(Energy&lt;0))
+  idx = find(Energy&lt;0);
+  PlanckConstant = 4.1350e-021; <span class="comment">% Planks constant in MeV*sec</span>
+  SpeedOfLight   = 299792458E9; <span class="comment">% in nano meters per second</span>
+  WaveLength     = -Energy(idx);
+  Energy(idx)    = (PlanckConstant*SpeedOfLight) ./ WaveLength;
+<span class="keyword">end</span>
+<span class="keyword">if</span> (any(Energy&lt;0.0009) || any(Energy&gt;21))
+  warning(<span class="string">'PhotonAttenuation:wrongEnergy'</span>,<span class="keyword">...</span>
+    <span class="string">'Warning in PhotonAttenuation function: energy is outside of the recomended range from 0.001 MeV to 20 MeV'</span>);
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Error using PhotonAttenuation (line 93)
+Not enough input arguments.</pre><h2>Process 'Material' Input Parameter<a name="4"></a></h2><pre class="codeinput"><span class="keyword">if</span> (ischar   (Material)), Material = {Material}; <span class="keyword">end</span>
+<span class="keyword">if</span> (isnumeric(Material)), Material = num2cell(Material); <span class="keyword">end</span>
+nMaterial = length(Material);
+</pre><h2>Process 'Options' Input Parameter<a name="5"></a></h2><pre class="codeinput">OptNames = {<span class="string">'mac'</span>,<span class="string">'meac'</span>, <span class="string">'cross section'</span>, <span class="string">'mean free path'</span>, <span class="string">'transmission'</span>, <span class="string">'ln_t'</span>, <span class="string">'lac'</span>, <span class="string">'half value layer'</span>, <span class="string">'tenth value layer'</span>, <span class="keyword">...</span>
+  <span class="string">'mac'</span>,<span class="string">'meac'</span>, <span class="string">'x'</span>, <span class="string">'mfp'</span>, <span class="string">'t'</span>, <span class="string">'log_t'</span>, <span class="string">'lac'</span>, <span class="string">'hvl'</span>, <span class="string">'tvl'</span>};
+nOpt = length(OptNames)/2;
+<span class="keyword">if</span> (nargin&lt;3), Options = 1; <span class="keyword">end</span>
+<span class="keyword">if</span> (ischar(Options))
+  Options = find(strcmpi( Options, OptNames),1);
+  <span class="keyword">if</span> (Options&gt;nOpt), Options=Options-nOpt; <span class="keyword">end</span>
+<span class="keyword">else</span>
+  <span class="keyword">if</span> (Options&gt;nOpt), Options=[]; <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="keyword">if</span> (isempty(Options))
+  error([<span class="string">'Error in PhotonAttenuation function: Options parameter was not recognized: '</span>, Options]);
+<span class="keyword">end</span>
+param = (Options==2)+1; <span class="comment">% param=2 if Option==2 and  param=1 otherwise</span>
+</pre><h2>Process 'Thickness' Input Parameter<a name="6"></a></h2><pre class="codeinput"><span class="keyword">if</span> (nargin&lt;4), Thickness=1; <span class="keyword">end</span>
+<span class="keyword">if</span> (length(Thickness)==1 &amp;&amp; nMaterial&gt;1)
+  Thickness = repmat(Thickness(1), 1, nMaterial);
+<span class="keyword">end</span>
+<span class="keyword">if</span> (length(Thickness)&gt;1 &amp;&amp; nMaterial==1)
+  nMaterial = length(Thickness);
+  Material = repmat(Material(1), 1, nMaterial);
+<span class="keyword">end</span>
+<span class="keyword">if</span> (length(Thickness)~=nMaterial)
+  error(<span class="string">'Error in PhotonAttenuation function: missmatch between lengths or Material and Thickness arrays'</span>);
+<span class="keyword">end</span>
+</pre><h2>Initialize output variables<a name="7"></a></h2><pre class="codeinput"><span class="keyword">if</span> (isempty(Spectrum)), X = zeros(nEnergy,nMaterial);
+<span class="keyword">else</span>                    X = zeros(1      ,nMaterial); <span class="keyword">end</span>
+u = 1.6605402E-24 ; <span class="comment">% atomic mass unit (1/12 of the mass of C-12)</span>
+barns = 1E24;       <span class="comment">% barns</span>
+</pre><h2>Main Loop: preform calculation for each material<a name="8"></a></h2><pre class="codeinput">old_material = [];
+<span class="keyword">for</span> iMat = 1:nMaterial
+</pre><h2>Parse material<a name="9"></a></h2><p>VARIABLES: Z      - array of element numbers contained in the material Ratios - array of element ratios in the material MatStr - string representation of the material</p><pre class="codeinput">  material = Material{iMat};
+  <span class="keyword">if</span> (isempty(material))
+    error(<span class="string">'Error in PhotonAttenuation function: compound formula was empty'</span>);
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> (~isempty(old_material) &amp;&amp; length(old_material)==length(material) &amp;&amp; all(old_material==material))
+    <span class="keyword">if</span> (Option&lt;3 &amp;&amp; isempty(Spectrum)) <span class="comment">% a shortcut for common configuration</span>
+      X(:,iMat) = mu;
+      <span class="keyword">continue</span>;
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+  <span class="keyword">if</span> (ischar(material)) <span class="comment">% check if this is element name or known compound</span>
+    [Z, Ratios] = ParseChemicalFormula(material);
+    <span class="keyword">if</span> (isempty(Z))
+      error([<span class="string">'Error in PhotonAttenuation function: compound formula was not recognized: '</span>, material]);
+    <span class="keyword">end</span>
+    MatStr = material;
+  <span class="keyword">elseif</span> (isnumeric(material))
+    Z      = material;
+    Ratios = 1;
+    MatStr = num2str(material);
+  <span class="keyword">else</span>
+    error(<span class="string">'Error in PhotonAttenuation function: compound formula was not recognized.'</span>);
+  <span class="keyword">end</span>
+  <span class="keyword">if</span> (length(Z)&gt;1 &amp;&amp; Options==3)
+    error(<span class="string">'Error in PhotonAttenuation function: Cross section "Option" is only supported for elements.'</span>);
+  <span class="keyword">end</span>
+</pre><h2>Look up the data, average contributions of different elements and save<a name="10"></a></h2><pre class="codeinput">  mu = PhotonAttenuationQ(Z, Energy, param);
+  old_material = material;          <span class="comment">% old_material will store the name of material for which we calculated mu</span>
+  Ratios = Ratios(:) / sum(Ratios); <span class="comment">% normalize ratios so they add up to one</span>
+  <span class="comment">% if mu is 2D (spectrum and compound) it will become 1D</span>
+  <span class="comment">% if mu is 1D (because of compound) it will become scalar</span>
+  <span class="comment">% if mu is 1D (because of spectrum) it will not change</span>
+  <span class="comment">% if mu is a scalar (monoenergetic &amp; element) it will not change</span>
+  mu  = mu * Ratios;
+</pre><h2>Lookup density and atomic molar mass if needed<a name="11"></a></h2><pre class="codeinput">  <span class="keyword">if</span> (Options&gt;=3 || ~isempty(Spectrum))
+    PP      = PhysProps(material);
+    Density = PP{1,2};
+    A       = Z/PP{1,1}; <span class="comment">% atomic molar mass in g/mol</span>
+    <span class="keyword">if</span> (Options&gt;3 &amp;&amp; isnan(Density))
+      error([<span class="string">'Error in PhotonAttenuation function: Physical properties of "'</span>,<span class="keyword">...</span>
+        MatStr,<span class="string">'" not found in PhysProps function.'</span>]);
+    <span class="keyword">end</span>
+    <span class="keyword">if</span> (Options==3 &amp;&amp; isnan(A))
+      <span class="comment">% calculate &lt;Z/A&gt; and atomic molar mass</span>
+      P  = PhysProps(Z);
+      ZA = [P{:,1}]';   <span class="comment">% extract &lt;Z/A&gt; of all elements in the compound</span>
+      A  = Z/dot(R,ZA); <span class="comment">% atomic molar mass in g/mol</span>
+      <span class="keyword">if</span> (isnan(A))
+        error([<span class="string">'Error in PhotonAttenuation function: Physical properties of "'</span>,<span class="keyword">...</span>
+          MatStr,<span class="string">'" not found in PhysProps function.'</span>]);
+      <span class="keyword">end</span>
+    <span class="keyword">end</span>
+  <span class="keyword">end</span>
+</pre><h2>Calculate Transmission if needed<a name="12"></a></h2><pre class="codeinput">  <span class="keyword">if</span> (Options==5 || Options==6 || ~isempty(Spectrum)) <span class="comment">% a shortcut for common configuration</span>
+    <span class="keyword">if</span>(Thickness(iMat)&gt;0),
+      MassThick =  Thickness(iMat)*Density; <span class="comment">% mass thickness measured in g/cm^2</span>
+    <span class="keyword">else</span>
+      MassThick = -Thickness(iMat);
+    <span class="keyword">end</span> <span class="comment">% user provided linear thickness</span>
+    MassThick = max(MassThick, 1e-6);
+    T = exp(-mu*MassThick); <span class="comment">% always convert to transmission</span>
+  <span class="keyword">end</span>
+</pre><h2>if Energy has a spectrum than integrate<a name="13"></a></h2><pre class="codeinput">  <span class="keyword">if</span> (~isempty(Spectrum))
+    T  = trapz(Energy, T.*Spectrum); <span class="comment">% integrate over energy (T become a scalar)</span>
+    mac = -log(T)/MassThick;
+  <span class="keyword">else</span>
+    mac = mu;
+  <span class="keyword">end</span>
+</pre><h2>Cast output in a chosen format<a name="14"></a></h2><pre class="codeinput">  <span class="keyword">switch</span> (Options)
+    <span class="keyword">case</span> {1,2} <span class="comment">% mac &amp; meac</span>
+      x = mac;
+    <span class="keyword">case</span> 3 <span class="comment">% 'cross section'</span>
+      x = mac * (barns*u*A);
+    <span class="keyword">case</span> 4 <span class="comment">% 'mean free path'</span>
+      x = 1./(mac*Density);
+    <span class="keyword">case</span> 5 <span class="comment">% 'transmission'</span>
+      x = T;
+    <span class="keyword">case</span> 6 <span class="comment">% 'log T'</span>
+      x = -log(T);
+    <span class="keyword">case</span> 7 <span class="comment">% 'linear attenuation coefficiant'</span>
+      x = mac*Density;
+    <span class="keyword">case</span> 8 <span class="comment">% 'half-value layer'</span>
+      x = -log(0.5)./(mac*Density);
+    <span class="keyword">case</span> 9 <span class="comment">% 'tenth-value layer'</span>
+      x = -log(0.1)./(mac*Density);
+  <span class="keyword">end</span>
+  X(:,iMat) = x;
+  <span class="keyword">if</span> (any(isnan(X(:,iMat))))
+    error([<span class="string">'Error in PhotonAttenuation function: Physical properties of "'</span>,<span class="keyword">...</span>
+      MatStr,<span class="string">'" not found in PhysProps function.'</span>]);
+  <span class="keyword">end</span>
+</pre><pre class="codeinput"><span class="keyword">end</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function X = PhotonAttenuation(Material, Energy, Options, Thickness)
+% PhotonAttenuation provides photon attenuation in different materials.
+%
+% X = PhotonAttenuation(Material, Energy, Options, Thickness)
+% Function providing the attenuation and energy absorption of x-ray and
+% gamma-ray photons in various materials including mixtures and compounds,
+% based on NIST report 5632, by J. Hubbell and S.M. Seltzer.
+%
+% Input :
+% 1) Material - string, number or array of strings, numbers or cells
+%     describing material type.
+%     - Element atomic number Z - in 1 to 100 range
+%     - Element symbols - 'Pb', 'Fe'
+%     - Element names   - 'Lead', 'Iron', 'Cesium' or 'Caesium'
+%     - Some common names and full compound names - 'Water', 'Polyethylene'
+%       (see function PhysProps for more details)
+%     - Compound formulas - 'H2SO4', 'C3H7NO2'- those are case sensitive
+%     - Mixtures of any of above with fractions by weight - like
+%       'H(0.057444)C(0.774589)O(0.167968)' for Bakelite or
+%       'B(10)H(11)C(58)O(21)' for Borated Polyethylene (BPE-10)
+% 2) Energy - Energy of the photons. Can be single energy or vector of
+%       energies. Several formats are allowed:
+%     - Energy in MeV, should be in [0.001, 20] MeV range.
+%     - Wavelengths in nano-meters. Encoded as negative numbers. The valid
+%     range is 6.1982e-5 to 1.2396 nm;
+%     - Continuous Spectrum - Encoded in 2 columns: column one contains
+%       energy in MeV and column two contains relative number of photons at that
+%       energy. Spectrum is assumed to be continuous and output is
+%       calculated through integration using 'trapz' function.
+% 3) Options - specifies what to return. String or number:
+%     1 - 'mac' - function returns Mass Attenuation Coefficients in cm^2/g
+%     2 - 'meac' - function returns Mass Energy-Absorption Coefficients
+%           in cm^2/g. See link below for more info:
+%           http://physics.nist.gov/PhysRefData/XrayMassCoef/chap3.html
+%     3 - 'cross section' or 'x' - function returns cross section in barns per
+%          atom (convert to cm^2 per atom by multiplying by 10^-24).
+%          Available only for elements.
+%     4 - 'mean free path' or 'mfp' - function returns mean free path (in cm) of
+%           photon in the given material . Available only for chemicals
+%           recognized by 'PhysProps' function (since density is needed).
+%     5 - 'transmission' or 't' - fraction of protons absorbed by given thickness
+%          of material
+%     6 - 'ln_T' - log of transmission
+%     7 - 'lac' - Linear Attenuation Coefficients in 1/cm same as 1/(Cross
+%          Section) or mac*density.
+%     8 - 'half value layer' or 'hvl' - function returns half-value layer (in cm) of
+%           photon in the given material . Available only for chemicals
+%           recognized by 'CompoundProps' function (since density is needed).
+%     9 - 'tenth value layer' or 'tvl' - analogous to 'hvl' .
+% 4) Thickness - Thickness of material in cm. Either scalar or vector of
+%      the same length as number of materials. Negative numbers indicate
+%      mass thickness measured in g/cm^2 (density*thickness). Needed only
+%      if energy spectrum is used or in case of Options set to
+%      'Transmission'.
+% Output :
+%   X  - output depends on 'Options' parameter. Columns always correspond
+%        to the materials and rows correspond to energy. In case of spectrum
+%        input only single row is returned.
+%
+% History:
+%   Written by Jarek Tuszynski (SAIC), 2006
+%   Updated by Jarek Tuszynski (Leidos), 2014, jaroslaw.w.tuszynski@leidos.com
+%   Inspired by John Schweppe Mathematica code available at
+%     http://library.wolfram.com/infocenter/MathSource/4267/
+%   Tables are based on NIST's XAAMDI and XCOM databases. See
+%     PhotonAttenuationQ function for more details.
+%
+% Examples:
+% %% Plot Cross sections of elements for different energy photons
+% figure
+% Z = 1:100; % elements with Z in 1-100 range
+% E = logspace(log10(0.001), log10(20), 500);  % define energy grid
+% X = PhotonAttenuation(Z, E, 'cross section');
+% imagesc(log10(X)); colorbar;
+% title('Cross sections of elements for different energy photons');
+% xlabel('Atomic Number of Elements');
+% ylabel('Photon Energy in MeV');
+% set(gca,'YTick',linspace(1, length(E), 10));
+% set(gca,'YTickLabel',1e-3*round(1e3*logspace(log10(0.001), log10(20), 10)))
+%
+% %% Plot Photon Attenuation Coefficients, using different input styles
+% figure
+% E = logspace(log10(0.001), log10(20), 500);  % define energy grid
+% Z = {'Concrete', 'Air', 'B(10)H(11)C(58)O(21)', 100, 'Ag'};
+% mac  = PhotonAttenuation(Z, E, 'mac');
+% loglog(E, mac);
+% legend({'Concrete', 'Air', 'BPE-10', 'Fermium', 'Silver'});
+% ylabel('Attenuation in cm^2/g');
+% xlabel('Photon Energy in MeV');
+% title('Photon Attenuation Coefficients for different materials');
+
+%% Process 'Energy' Input Parameter
+s = size(Energy);
+nEnergy = prod(s);
+Spectrum = [];
+if (min(s)==2)
+  if (s(1)==2), Energy=Energy'; end
+  Spectrum = Energy(:,2);
+  Energy   = Energy(:,1);
+  Spectrum = Spectrum / trapz(Energy, Spectrum); % normalize spectrum
+  nEnergy  = 1; % this is a spectrum output will be an array instead of matrix
+end
+Energy  = Energy(:);
+if (any(Energy<0))
+  idx = find(Energy<0);
+  PlanckConstant = 4.1350e-021; % Planks constant in MeV*sec
+  SpeedOfLight   = 299792458E9; % in nano meters per second
+  WaveLength     = -Energy(idx);
+  Energy(idx)    = (PlanckConstant*SpeedOfLight) ./ WaveLength;
+end
+if (any(Energy<0.0009) || any(Energy>21))
+  warning('PhotonAttenuation:wrongEnergy',...
+    'Warning in PhotonAttenuation function: energy is outside of the recomended range from 0.001 MeV to 20 MeV');
+end
+
+%% Process 'Material' Input Parameter
+if (ischar   (Material)), Material = {Material}; end
+if (isnumeric(Material)), Material = num2cell(Material); end
+nMaterial = length(Material);
+
+%% Process 'Options' Input Parameter
+OptNames = {'mac','meac', 'cross section', 'mean free path', 'transmission', 'ln_t', 'lac', 'half value layer', 'tenth value layer', ...
+  'mac','meac', 'x', 'mfp', 't', 'log_t', 'lac', 'hvl', 'tvl'};
+nOpt = length(OptNames)/2;
+if (nargin<3), Options = 1; end
+if (ischar(Options))
+  Options = find(strcmpi( Options, OptNames),1);
+  if (Options>nOpt), Options=Options-nOpt; end
+else
+  if (Options>nOpt), Options=[]; end
+end
+if (isempty(Options))
+  error(['Error in PhotonAttenuation function: Options parameter was not recognized: ', Options]);
+end
+param = (Options==2)+1; % param=2 if Option==2 and  param=1 otherwise
+
+%% Process 'Thickness' Input Parameter
+if (nargin<4), Thickness=1; end
+if (length(Thickness)==1 && nMaterial>1)
+  Thickness = repmat(Thickness(1), 1, nMaterial);
+end
+if (length(Thickness)>1 && nMaterial==1)
+  nMaterial = length(Thickness);
+  Material = repmat(Material(1), 1, nMaterial);
+end
+if (length(Thickness)~=nMaterial)
+  error('Error in PhotonAttenuation function: missmatch between lengths or Material and Thickness arrays');
+end
+
+%% Initialize output variables
+if (isempty(Spectrum)), X = zeros(nEnergy,nMaterial);
+else                    X = zeros(1      ,nMaterial); end
+u = 1.6605402E-24 ; % atomic mass unit (1/12 of the mass of C-12)
+barns = 1E24;       % barns
+
+%% Main Loop: preform calculation for each material
+old_material = [];
+for iMat = 1:nMaterial
+  %% Parse material
+  % VARIABLES:
+  % Z      - array of element numbers contained in the material
+  % Ratios - array of element ratios in the material
+  % MatStr - string representation of the material
+  material = Material{iMat};
+  if (isempty(material))
+    error('Error in PhotonAttenuation function: compound formula was empty');
+  end
+  if (~isempty(old_material) && length(old_material)==length(material) && all(old_material==material))
+    if (Option<3 && isempty(Spectrum)) % a shortcut for common configuration
+      X(:,iMat) = mu;
+      continue;
+    end
+  end
+  
+  if (ischar(material)) % check if this is element name or known compound
+    [Z, Ratios] = ParseChemicalFormula(material);
+    if (isempty(Z))
+      error(['Error in PhotonAttenuation function: compound formula was not recognized: ', material]);
+    end
+    MatStr = material;
+  elseif (isnumeric(material))
+    Z      = material;
+    Ratios = 1;
+    MatStr = num2str(material);
+  else
+    error('Error in PhotonAttenuation function: compound formula was not recognized.');
+  end
+  if (length(Z)>1 && Options==3)
+    error('Error in PhotonAttenuation function: Cross section "Option" is only supported for elements.');
+  end
+  
+  %% Look up the data, average contributions of different elements and save
+  mu = PhotonAttenuationQ(Z, Energy, param);
+  old_material = material;          % old_material will store the name of material for which we calculated mu
+  Ratios = Ratios(:) / sum(Ratios); % normalize ratios so they add up to one
+  % if mu is 2D (spectrum and compound) it will become 1D
+  % if mu is 1D (because of compound) it will become scalar
+  % if mu is 1D (because of spectrum) it will not change
+  % if mu is a scalar (monoenergetic & element) it will not change
+  mu  = mu * Ratios;
+  
+  %% Lookup density and atomic molar mass if needed
+  if (Options>=3 || ~isempty(Spectrum))
+    PP      = PhysProps(material);
+    Density = PP{1,2};
+    A       = Z/PP{1,1}; % atomic molar mass in g/mol
+    if (Options>3 && isnan(Density))
+      error(['Error in PhotonAttenuation function: Physical properties of "',...
+        MatStr,'" not found in PhysProps function.']);
+    end
+    if (Options==3 && isnan(A))
+      % calculate <Z/A> and atomic molar mass
+      P  = PhysProps(Z);
+      ZA = [P{:,1}]';   % extract <Z/A> of all elements in the compound
+      A  = Z/dot(R,ZA); % atomic molar mass in g/mol
+      if (isnan(A))
+        error(['Error in PhotonAttenuation function: Physical properties of "',...
+          MatStr,'" not found in PhysProps function.']);
+      end
+    end
+  end
+  
+  %% Calculate Transmission if needed
+  if (Options==5 || Options==6 || ~isempty(Spectrum)) % a shortcut for common configuration
+    if(Thickness(iMat)>0),
+      MassThick =  Thickness(iMat)*Density; % mass thickness measured in g/cm^2
+    else
+      MassThick = -Thickness(iMat);
+    end % user provided linear thickness
+    MassThick = max(MassThick, 1e-6);
+    T = exp(-mu*MassThick); % always convert to transmission
+  end
+  
+  %% if Energy has a spectrum than integrate
+  if (~isempty(Spectrum))
+    T  = trapz(Energy, T.*Spectrum); % integrate over energy (T become a scalar)
+    mac = -log(T)/MassThick;
+  else
+    mac = mu;
+  end
+  
+  %% Cast output in a chosen format
+  switch (Options)
+    case {1,2} % mac & meac
+      x = mac;
+    case 3 % 'cross section'
+      x = mac * (barns*u*A);
+    case 4 % 'mean free path'
+      x = 1./(mac*Density);
+    case 5 % 'transmission'
+      x = T;
+    case 6 % 'log T'
+      x = -log(T);
+    case 7 % 'linear attenuation coefficiant'
+      x = mac*Density;
+    case 8 % 'half-value layer'
+      x = -log(0.5)./(mac*Density);
+    case 9 % 'tenth-value layer'
+      x = -log(0.1)./(mac*Density);
+  end
+  X(:,iMat) = x;
+  if (any(isnan(X(:,iMat))))
+    error(['Error in PhotonAttenuation function: Physical properties of "',...
+      MatStr,'" not found in PhysProps function.']);
+  end
+  
+end
+
+##### SOURCE END #####
+--></body></html>
