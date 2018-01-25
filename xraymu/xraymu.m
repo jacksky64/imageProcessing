@@ -43,7 +43,7 @@ assert(~isempty(egys) );
 assert(all(egys>0.0));
 
 if ischar(chem_spec)
-  [elems,ns] = ParseChemicalFormula(chem_spec);  
+  [elems,ns] = ParseChemicalFormula_xraymu(chem_spec);  
   [atomic_numbers,atomic_weights] = ChemicalSymbols2AtomicNumbers(elems);
 elseif isnumeric(chem_spec) && (size(chem_spec,2)==2) && (all(chem_spec(:,1)<92)) && (all(chem_spec(:,2)<=1)) 
    do_weight_fraction = true;

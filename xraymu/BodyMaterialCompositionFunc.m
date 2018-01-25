@@ -216,6 +216,16 @@ d = [
 dat.water = d;
 s(d(2:end,1),end+1) = d(2:end,2);
 
+d = [
+-1	1.0
+1 	0.0002
+8 	0.4143
+15 	0.1853
+20 	0.3984
+];
+dat.calcium_hydro = d;
+s(d(2:end,1),end+1) = d(2:end,2);
+
 dat.summary = s;
 
 
