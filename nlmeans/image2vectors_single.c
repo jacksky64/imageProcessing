@@ -224,7 +224,7 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] ) {
     
     /* Size of vector volume */
     int nVsize=2;
-    int Vsize[2];
+    mwSize Vsize[2];
     int indexV=0;
     
     /* Constants used */

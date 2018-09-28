@@ -318,7 +318,7 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] ) {
     
     /* Size of vector volume */
     int ndimsJ=3;
-    int dimsJ[3]={1, 1, 1};
+    mwSize dimsJ[3]={1, 1, 1};
     int indexJ=0;
     int image3D;
     
