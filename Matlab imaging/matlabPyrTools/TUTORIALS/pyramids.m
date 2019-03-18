@@ -538,8 +538,7 @@ end
 
 %% Now look at the corresponding Fourier transform magnitudes (these
 %% are plotted over the frequency range [-pi, pi] ):
-%nextFig(2,1);
-figure(2);
+nextFig(2,1);
 freq = 2 * pi * [-sz/2:(sz/2-1)]/sz;
 for lnum=1:wpyrHt(pind)+1
   for bnum=1:3
@@ -550,8 +549,7 @@ for lnum=1:wpyrHt(pind)+1
     axis('square'); axis('xy'); colormap('gray');
   end
 end
-%nextFig(2,-1);
-figure(1);
+nextFig(2,-1);
 
 %% The filters at a given scale sum to a squarish annular region:
 sumSpectra = zeros(sz);
@@ -577,11 +575,9 @@ for lnum=1:nlevs
 end
 
 %% In addition to the bands shown above, there's a lowpass residual:
-%nextFig(2,1);
-figure(2);
+nextFig(2,1);
 clf; showIm(pyrLow(pyr,pind));
-%nextFig(2,-1);
-figure(1);
+nextFig(2,-1);
 
 % Alternatively, display the pyramid with the subbands shown at their
 % correct relative sizes:
@@ -709,15 +705,13 @@ shifted_sig = [0,sig(1:size(sig,2)-1)];
 [spyr,spind] = buildWpyr(shifted_sig, 4, daub_lo, 'circular');
 
 %% Plot each band of the unshifted and shifted decomposition
-%nextFig(2);
-figure(2);
+nextFig(2);
 nbands = size(spind,1)
 for b=1:nbands
   subplot(nbands,1,b); lplot(pyrBand(spyr,spind,b));
   axis([1 size(pyrBand(spyr,spind,b),2) -0.3 1.3]);
 end
-%nextFig(2,-1);
-figure(1);
+nextFig(2,-1);
 
 %% In the third band, we expected the coefficients to move around
 %% because the signal was shifted.  But notice that in the original

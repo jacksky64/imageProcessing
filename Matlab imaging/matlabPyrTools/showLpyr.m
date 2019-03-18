@@ -26,7 +26,7 @@
 
 % Eero Simoncelli, 2/97.
 
-function [range,d_im] = showLpyr(pyr, pind, range, gap, scale);
+function [range] = showLpyr(pyr, pind, range, gap, scale);
 
 % Determine 1D or 2D pyramid:
 if ((pind(1,1) == 1) | (pind(1,2) ==1))
